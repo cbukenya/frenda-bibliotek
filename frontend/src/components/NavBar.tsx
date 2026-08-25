@@ -98,9 +98,8 @@ export default function NavBar() {
             {/* Auth */}
             <Link
               href="/login"
-              className="flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+              className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">login</span>
               {t('login')}
             </Link>
           </div>
