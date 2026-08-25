@@ -5,6 +5,9 @@ const config: Config = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Explicitly include dynamic-segment dirs (fast-glob treats [] as char classes)
+    './src/app/\\[locale\\]/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/\\[locale\\]/books/\\[id\\]/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {
