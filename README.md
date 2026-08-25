@@ -1,6 +1,6 @@
 # Frenda Bibliotek
 
-A full-stack book lending application built from the borrower's perspective. Browse the library catalogue, borrow and return books, track your loans, and discover what to read next.
+A full-stack book lending application. Browse the library catalogue, borrow and return books, track your loans, and discover what to read next.
 
 ## Features
 
