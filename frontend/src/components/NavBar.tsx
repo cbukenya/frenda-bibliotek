@@ -125,12 +125,6 @@ export default function NavBar() {
               )}
             </div>
 
-            {/* Notifications */}
-            <button className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
-            </button>
-
             {/* User area */}
             {loggedIn ? (
               <div className="relative" ref={userRef}>
