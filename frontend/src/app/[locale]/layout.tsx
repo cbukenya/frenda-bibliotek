@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import NavBar from '@/components/NavBar';
-import UserSwitcher from '@/components/UserSwitcher';
 
 export const metadata: Metadata = {
   title: { default: 'Frenda Bibliotek', template: '%s | Frenda Bibliotek' },
@@ -22,7 +21,6 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <NavBar />
       {children}
-      <UserSwitcher />
     </NextIntlClientProvider>
   );
 }

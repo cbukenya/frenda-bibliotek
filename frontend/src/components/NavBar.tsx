@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { getCurrentUserId, getUser, type User } from '@/lib/api';
+
 
 export default function NavBar() {
   const t = useTranslations('nav');
@@ -12,15 +11,6 @@ export default function NavBar() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const load = () => getUser(getCurrentUserId()).then(setUser).catch(() => null);
-    load();
-    window.addEventListener('frenda_user_changed', load);
-    return () => window.removeEventListener('frenda_user_changed', load);
-  }, []);
-
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' || pathname === '/sv' : pathname.includes(href);
 
@@ -28,10 +18,6 @@ export default function NavBar() {
     const stripped = pathname.replace(/^\/(en|sv)/, '') || '/';
     router.push(next === 'en' ? stripped : `/${next}${stripped}`);
   };
-
-  const initials = user
-    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : '?';
 
   return (
     <>
@@ -109,13 +95,14 @@ export default function NavBar() {
               <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
             </button>
 
-            {/* Avatar */}
-            <div
-              className="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-xs font-bold border border-outline-variant cursor-pointer"
-              title={user?.name}
+            {/* Auth */}
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
             >
-              {initials}
-            </div>
+              <span className="material-symbols-outlined text-[18px]">login</span>
+              {t('login')}
+            </Link>
           </div>
         </div>
       </header>

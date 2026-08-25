@@ -5,7 +5,8 @@
     "myLoans": "My Loans",
     "discover": "Discover",
     "searchPlaceholder": "Search library...",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "login": "Log in"
   },
   "browse": {
     "title": "Library Overview",
@@ -78,12 +79,36 @@
     "borrowed": "{count} borrowed",
     "available": "Available"
   },
-  "dev": {
-    "label": "🛠 Dev — browsing as:"
-  },
   "common": {
     "english": "EN",
     "swedish": "SV",
     "langLabel": "Language"
+  },
+  "login": {
+    "title": "Frenda Bibliotek",
+    "subtitle": "Welcome back. Log in to continue.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "name@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "submit": "Log in",
+    "noAccount": "New to Frenda Bibliotek?",
+    "createAccount": "Create account"
+  },
+  "register": {
+    "title": "Frenda Bibliotek",
+    "subtitle": "Create an account to access thousands of books and resources.",
+    "nameLabel": "Full name",
+    "namePlaceholder": "Jane Doe",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "jane.doe@example.com",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Create account",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Log in"
   }
 }

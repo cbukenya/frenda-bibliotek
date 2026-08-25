@@ -5,7 +5,8 @@
     "myLoans": "Mina Lån",
     "discover": "Upptäck",
     "searchPlaceholder": "Sök i biblioteket...",
-    "notifications": "Aviseringar"
+    "notifications": "Aviseringar",
+    "login": "Logga in"
   },
   "browse": {
     "title": "Biblioteksöversikt",
@@ -78,12 +79,36 @@
     "borrowed": "{count} lånade",
     "available": "Tillgänglig"
   },
-  "dev": {
-    "label": "🛠 Dev — bläddrar som:"
-  },
   "common": {
     "english": "EN",
     "swedish": "SV",
     "langLabel": "Språk"
+  },
+  "login": {
+    "title": "Frenda Bibliotek",
+    "subtitle": "Välkommen tillbaka. Logga in för att fortsätta.",
+    "emailLabel": "E-postadress",
+    "emailPlaceholder": "namn@exempel.se",
+    "passwordLabel": "Lösenord",
+    "passwordPlaceholder": "••••••••",
+    "rememberMe": "Kom ihåg mig",
+    "forgotPassword": "Glömt lösenord?",
+    "submit": "Logga in",
+    "noAccount": "Ny på Frenda Bibliotek?",
+    "createAccount": "Skapa konto"
+  },
+  "register": {
+    "title": "Frenda Bibliotek",
+    "subtitle": "Skapa ett konto för att få tillgång till tusentals böcker och resurser.",
+    "nameLabel": "Fullständigt namn",
+    "namePlaceholder": "Lars Larsson",
+    "emailLabel": "E-postadress",
+    "emailPlaceholder": "lars.larsson@exempel.se",
+    "passwordLabel": "Lösenord",
+    "confirmPasswordLabel": "Bekräfta lösenord",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Skapa konto",
+    "hasAccount": "Har du redan ett konto?",
+    "loginLink": "Logga in"
   }
 }
