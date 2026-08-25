@@ -16,7 +16,10 @@
     "noResults": "No books found",
     "noResultsHint": "Try a different search term.",
     "allBooks": "All books",
-    "filter": "Filter"
+    "filter": "Filter",
+    "filterByGenre": "Filter by genre",
+    "clearFilter": "Clear filter",
+    "applyFilter": "Apply"
   },
   "bookCard": {
     "availableBadge": "● Available: {available} of {total}",

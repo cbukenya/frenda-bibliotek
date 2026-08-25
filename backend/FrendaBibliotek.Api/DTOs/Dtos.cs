@@ -1,5 +1,23 @@
 namespace FrendaBibliotek.Api.DTOs;
 
+// ─── Genres ───────────────────────────────────────────────────────────────────
+
+public record GenreDto(
+    int Id,
+    string Name,
+    string Slug,
+    int? ParentId,
+    IEnumerable<GenreDto>? Children = null
+);
+
+// ─── Authors ──────────────────────────────────────────────────────────────────
+
+public record AuthorDto(
+    int Id,
+    string Name,
+    string Slug
+);
+
 // ─── Books ────────────────────────────────────────────────────────────────────
 
 public record BookSummaryDto(
@@ -7,7 +25,9 @@ public record BookSummaryDto(
     string ISBN,
     string Title,
     string Author,
+    int AuthorId,
     string Genre,
+    int GenreId,
     int PublishedYear,
     string? CoverUrl,
     int TotalCopies,
@@ -20,7 +40,9 @@ public record BookDetailDto(
     string ISBN,
     string Title,
     string Author,
+    int AuthorId,
     string Genre,
+    int GenreId,
     string Description,
     int PublishedYear,
     int TotalPages,

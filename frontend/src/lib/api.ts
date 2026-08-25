@@ -5,7 +5,9 @@ export interface Book {
   isbn: string;
   title: string;
   author: string;
+  authorId: number;
   genre: string;
+  genreId: number;
   description: string;
   publishedYear: number;
   totalPages: number;
@@ -13,6 +15,20 @@ export interface Book {
   totalCopies: number;
   availableCopies: number;
   avgReadingDays: number | null;
+}
+
+export interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  children?: Genre[];
+}
+
+export interface Author {
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface BookDetail extends Book {
@@ -77,8 +93,13 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
 
 // ─── Books ────────────────────────────────────────────────────────────────────
 
-export const getBooks = (): Promise<Book[]> =>
-  apiFetch('/api/books');
+export const getBooks = (filters?: { genreId?: number; authorId?: number }): Promise<Book[]> => {
+  const params = new URLSearchParams();
+  if (filters?.genreId) params.set('genreId', String(filters.genreId));
+  if (filters?.authorId) params.set('authorId', String(filters.authorId));
+  const qs = params.toString();
+  return apiFetch(`/api/books${qs ? `?${qs}` : ''}`);
+};
 
 export const getTopBooks = (): Promise<Book[]> =>
   apiFetch('/api/books/top');
@@ -108,6 +129,17 @@ export const getUsers = (): Promise<User[]> =>
 export const getUser = (id: number): Promise<User> =>
   apiFetch(`/api/users/${id}`);
 
+// ─── Genres ─────────────────────────────────────────────────────────────────────────────
+
+export const getGenreTree = (): Promise<Genre[]> =>
+  apiFetch('/api/genres/tree');
+
+export const getGenreAncestors = (id: number): Promise<Genre[]> =>
+  apiFetch(`/api/genres/${id}/ancestors`);
+
+export const getAuthors = (): Promise<Author[]> =>
+  apiFetch('/api/authors');
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Days until due (loans are 14 days). Returns negative if overdue. */
@@ -135,14 +167,30 @@ export function coverUrl(book: Pick<Book, 'coverUrl' | 'genre' | 'title'>): stri
 }
 
 const GENRE_EMOJI: Record<string, string> = {
-  'Programming':    '💻',
-  'Design':         '🎨',
-  'Psychology':     '🧠',
-  'History':        '📜',
-  'Science Fiction':'🚀',
-  'Memoir':         '📖',
-  'Self-Help':      '⭐',
-  'Philosophy':     '🏛️',
+  'Programming':      '💻',
+  'Agile & Craftsmanship': '💻',
+  'Systems Programming': '⚙️',
+  'Design':           '🎨',
+  'UX Design':        '🎨',
+  'Psychology':       '🧠',
+  'Cognitive Psychology': '🧠',
+  'History':          '📜',
+  'Science Fiction':  '🚀',
+  'Space Opera':      '🚀',
+  'Cyberpunk':        '🤖',
+  'Military Sci-Fi':  '⚔️',
+  'Fantasy':          '🧙',
+  'Epic Fantasy':     '🧙',
+  'Urban Fantasy':    '🏙️',
+  'Literary Fiction': '📖',
+  'Memoir':           '📖',
+  'Self-Help':        '⭐',
+  'Philosophy':       '🏛️',
+  'Science':          '🔬',
+  'Physics':          '⚛️',
+  'Technology':       '🖥️',
+  'Fiction':          '📚',
+  'Non-Fiction':      '📚',
 };
 
 export function genreEmoji(genre: string): string {

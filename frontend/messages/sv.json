@@ -16,7 +16,10 @@
     "noResults": "Inga böcker hittades",
     "noResultsHint": "Försök med ett annat sökord.",
     "allBooks": "Alla böcker",
-    "filter": "Filter"
+    "filter": "Filter",
+    "filterByGenre": "Filtrera efter genre",
+    "clearFilter": "Rensa filter",
+    "applyFilter": "Tillämpa"
   },
   "bookCard": {
     "availableBadge": "● Tillgänglig: {available} av {total}",
