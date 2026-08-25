@@ -1,15 +1,16 @@
 {
   "nav": {
     "logo": "Frenda Bibliotek",
-    "browse": "Bläddra",
+    "browse": "Böcker",
     "myLoans": "Mina Lån",
     "discover": "Upptäck",
     "searchPlaceholder": "Sök i biblioteket...",
     "notifications": "Aviseringar",
-    "login": "Logga in"
+    "login": "Logga in",
+    "logout": "Logga ut"
   },
   "browse": {
-    "title": "Biblioteksöversikt",
+    "title": "Bibliotekskatalog",
     "subtitle": "Utforska vår samlade kollektion av teknisk och professionell litteratur. Hitta resurser för att höja dina kunskaper.",
     "searchPlaceholder": "Sök på titel, författare, genre eller ISBN…",
     "noResults": "Inga böcker hittades",

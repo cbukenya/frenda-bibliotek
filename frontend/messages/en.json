@@ -1,15 +1,16 @@
 {
   "nav": {
     "logo": "Frenda Bibliotek",
-    "browse": "Browse",
+    "browse": "Books",
     "myLoans": "My Loans",
     "discover": "Discover",
     "searchPlaceholder": "Search library...",
     "notifications": "Notifications",
-    "login": "Log in"
+    "login": "Log in",
+    "logout": "Log out"
   },
   "browse": {
-    "title": "Library Overview",
+    "title": "Library Catalogue",
     "subtitle": "Explore our curated collection of technical and professional literature. Find resources to elevate your skills and knowledge.",
     "searchPlaceholder": "Search by title, author, genre, or ISBN…",
     "noResults": "No books found",

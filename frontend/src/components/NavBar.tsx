@@ -12,12 +12,15 @@ export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const [langOpen, setLangOpen] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+      if (userRef.current && !userRef.current.contains(e.target as Node)) setUserOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -46,7 +49,6 @@ export default function NavBar() {
             <nav className="flex gap-6 items-center">
               {([
                 { href: '/',         label: t('browse')   },
-                { href: '/loans',    label: t('myLoans')  },
                 { href: '/discover', label: t('discover') },
               ] as const).map(({ href, label }) => (
                 <Link
@@ -117,14 +119,36 @@ export default function NavBar() {
               <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
             </button>
 
-            {/* Auth */}
-            <Link
-              href="/login"
-              className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-            >
-              {t('login')}
-            </Link>
-          </div>
+            {/* User menu */}
+            <div className="relative" ref={userRef}>
+              <button
+                onClick={() => setUserOpen(v => !v)}
+                className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors"
+              >
+                <span className="material-symbols-outlined">person</span>
+              </button>
+              {userOpen && (
+                <div className="absolute right-0 mt-1 w-48 bg-surface-container-lowest rounded-lg shadow-lg border border-outline-variant/20 py-1 z-50">
+                  <Link
+                    href="/loans"
+                    onClick={() => setUserOpen(false)}
+                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">book_4</span>
+                    {t('myLoans')}
+                  </Link>
+                  <hr className="my-1 border-outline-variant/20" />
+                  <Link
+                    href="/login"
+                    onClick={() => setUserOpen(false)}
+                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">logout</span>
+                    {t('logout')}
+                  </Link>
+                </div>
+              )}
+            </div>
         </div>
       </header>
 
@@ -132,8 +156,8 @@ export default function NavBar() {
       <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 md:hidden bg-surface border-t border-outline-variant/30 shadow-[0_-4px_20px_rgba(71,80,144,0.08)]">
         {([
           { href: '/',         icon: 'library_books', label: t('browse')   },
-          { href: '/loans',    icon: 'book_4',        label: t('myLoans')  },
           { href: '/discover', icon: 'explore',       label: t('discover') },
+          { href: '/loans',    icon: 'book_4',        label: t('myLoans')  },
         ] as const).map(({ href, icon, label }) => {
           const active = isActive(href);
           return (
