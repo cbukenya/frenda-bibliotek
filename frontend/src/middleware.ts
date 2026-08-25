@@ -8,7 +8,7 @@ const intlMiddleware = createMiddleware({
 });
 
 // Paths that REQUIRE authentication
-const PROTECTED_PATHS = ['/loans', '/borrow', '/discover'];
+const PROTECTED_PATHS = ['/loans', '/borrow'];
 
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
