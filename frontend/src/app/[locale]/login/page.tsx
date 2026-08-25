@@ -2,11 +2,32 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { login } from '@/lib/api';
 
 export default function LoginPage() {
   const t = useTranslations('login');
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      await login(email, password);
+      window.location.href = '/loans';
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EEF1FF] via-background to-[#E8F4F8] px-4">
@@ -26,7 +47,13 @@ export default function LoginPage() {
           {t('subtitle')}
         </p>
 
-        <form onSubmit={e => e.preventDefault()} className="flex flex-col gap-5">
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Email */}
           <div>
             <label className="block font-label-md text-label-md text-on-surface mb-1.5">
@@ -36,7 +63,10 @@ export default function LoginPage() {
               <span className="material-symbols-outlined absolute left-3 top-3 text-on-surface-variant text-[20px]">mail</span>
               <input
                 type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 placeholder={t('emailPlaceholder')}
+                required
                 className="w-full bg-surface-container-low border-none rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary outline-none transition-all"
               />
             </div>
@@ -51,7 +81,10 @@ export default function LoginPage() {
               <span className="material-symbols-outlined absolute left-3 top-3 text-on-surface-variant text-[20px]">lock</span>
               <input
                 type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 placeholder={t('passwordPlaceholder')}
+                required
                 className="w-full bg-surface-container-low border-none rounded-lg py-3 pl-10 pr-12 font-body-md text-body-md text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary outline-none transition-all"
               />
               <button
@@ -66,26 +99,13 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Remember / Forgot */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
-              />
-              <span className="font-body-sm text-body-sm text-on-surface-variant">{t('rememberMe')}</span>
-            </label>
-            <Link href="#" className="font-label-sm text-label-sm text-primary hover:underline">
-              {t('forgotPassword')}
-            </Link>
-          </div>
-
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-lg hover:opacity-90 transition-opacity mt-2"
+            disabled={loading}
+            className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-lg hover:opacity-90 transition-opacity mt-2 disabled:opacity-60"
           >
-            {t('submit')}
+            {loading ? t('loggingIn') : t('submit')}
           </button>
         </form>
 

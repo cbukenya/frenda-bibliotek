@@ -14,7 +14,14 @@
     "subtitle": "Explore our curated collection of technical and professional literature. Find resources to elevate your skills and knowledge.",
     "searchPlaceholder": "Search by title, author, genre, or ISBN…",
     "noResults": "No books found",
-    "noResultsHint": "Try a different search term."
+    "noResultsHint": "Try a different search term.",
+    "allBooks": "All books",
+    "filter": "Filter",
+    "filterByGenre": "Filter by genre",
+    "filterByAuthor": "Filter by author",
+    "searchAuthor": "Search author…",
+    "clearFilter": "Clear filter",
+    "applyFilter": "Apply"
   },
   "bookCard": {
     "availableBadge": "● Available: {available} of {total}",
@@ -27,7 +34,7 @@
     "communityData": "community data"
   },
   "bookDetail": {
-    "back": "Back to results",
+    "back": "Back",
     "borrowBook": "Borrow Book",
     "borrowing": "Borrowing…",
     "borrowed": "Borrowed ✓",
@@ -36,7 +43,7 @@
     "allOut": "All Out",
     "isbn": "ISBN",
     "genre": "Genre",
-    "pages": "Pages",
+    "readingTime": "Reading time",
     "year": "Year",
     "avgLoan": "Avg loan: {days} days · Est. {time}",
     "recommendationsTitle": "Others who borrowed this also borrowed…"
@@ -71,7 +78,6 @@
     "title": "Discover New Worlds",
     "subtitle": "Explore curated recommendations and top trending titles handpicked for your reading journey.",
     "recommended": "Recommended for You",
-    "because": "Because you borrowed \"{title}\"",
     "topList": "Top List: Most Borrowed This Month",
     "borrowed": "{count} borrowed",
     "available": "Available"
@@ -92,9 +98,8 @@
     "emailPlaceholder": "name@example.com",
     "passwordLabel": "Password",
     "passwordPlaceholder": "••••••••",
-    "rememberMe": "Remember me",
-    "forgotPassword": "Forgot password?",
     "submit": "Log in",
+    "loggingIn": "Logging in…",
     "noAccount": "New to Frenda Bibliotek?",
     "createAccount": "Create account"
   },
@@ -109,7 +114,27 @@
     "confirmPasswordLabel": "Confirm password",
     "passwordPlaceholder": "••••••••",
     "submit": "Create account",
+    "creating": "Creating…",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordTooShort": "Password must be at least 6 characters.",
     "hasAccount": "Already have an account?",
     "loginLink": "Log in"
+  },
+  "borrowPage": {
+    "back": "Back",
+    "available": "{count} available",
+    "unavailable": "All copies out",
+    "loanDetails": "Loan details",
+    "returnDateLabel": "Planned return date",
+    "returnDateHint": "Standard loan period is 14 days. You can return earlier.",
+    "bookTitle": "Book",
+    "loanDate": "Loan date",
+    "plannedReturn": "Planned return",
+    "confirmBorrow": "Confirm loan",
+    "borrowing": "Processing…",
+    "cancel": "Cancel",
+    "successTitle": "Book loaned!",
+    "successMessage": "You can pick it up at the library front desk.",
+    "viewLoans": "View my loans"
   }
 }

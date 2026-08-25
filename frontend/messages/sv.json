@@ -14,7 +14,14 @@
     "subtitle": "Utforska vår samlade kollektion av teknisk och professionell litteratur. Hitta resurser för att höja dina kunskaper.",
     "searchPlaceholder": "Sök på titel, författare, genre eller ISBN…",
     "noResults": "Inga böcker hittades",
-    "noResultsHint": "Försök med ett annat sökord."
+    "noResultsHint": "Försök med ett annat sökord.",
+    "allBooks": "Alla böcker",
+    "filter": "Filter",
+    "filterByGenre": "Filtrera efter genre",
+    "filterByAuthor": "Filtrera efter författare",
+    "searchAuthor": "Sök författare…",
+    "clearFilter": "Rensa filter",
+    "applyFilter": "Tillämpa"
   },
   "bookCard": {
     "availableBadge": "● Tillgänglig: {available} av {total}",
@@ -27,7 +34,7 @@
     "communityData": "communitydata"
   },
   "bookDetail": {
-    "back": "Tillbaka till sökresultat",
+    "back": "Tillbaka",
     "borrowBook": "Låna boken",
     "borrowing": "Lånar…",
     "borrowed": "Lånad ✓",
@@ -36,7 +43,7 @@
     "allOut": "Alla utlånade",
     "isbn": "ISBN",
     "genre": "Genre",
-    "pages": "Sidor",
+    "readingTime": "Lästid",
     "year": "År",
     "avgLoan": "Medellån: {days} dagar · Ca. {time}",
     "recommendationsTitle": "Andra som lånade den här boken lånade också…"
@@ -71,7 +78,6 @@
     "title": "Upptäck nya världar",
     "subtitle": "Utforska kurerade rekommendationer och topplistor handplockade för din läsresa.",
     "recommended": "Rekommenderat för dig",
-    "because": "Eftersom du lånade \"{title}\"",
     "topList": "Topplista: Mest lånade denna månad",
     "borrowed": "{count} lånade",
     "available": "Tillgänglig"
@@ -92,9 +98,8 @@
     "emailPlaceholder": "namn@exempel.se",
     "passwordLabel": "Lösenord",
     "passwordPlaceholder": "••••••••",
-    "rememberMe": "Kom ihåg mig",
-    "forgotPassword": "Glömt lösenord?",
     "submit": "Logga in",
+    "loggingIn": "Loggar in…",
     "noAccount": "Ny på Frenda Bibliotek?",
     "createAccount": "Skapa konto"
   },
@@ -109,7 +114,27 @@
     "confirmPasswordLabel": "Bekräfta lösenord",
     "passwordPlaceholder": "••••••••",
     "submit": "Skapa konto",
+    "creating": "Skapar…",
+    "passwordMismatch": "Lösenorden matchar inte.",
+    "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
     "hasAccount": "Har du redan ett konto?",
     "loginLink": "Logga in"
+  },
+  "borrowPage": {
+    "back": "Tillbaka",
+    "available": "{count} tillgängliga",
+    "unavailable": "Alla utlånade",
+    "loanDetails": "Låndetaljer",
+    "returnDateLabel": "Planerat returdatum",
+    "returnDateHint": "Standard låneperiod är 14 dagar. Du kan lämna tillbaka tidigare.",
+    "bookTitle": "Bok",
+    "loanDate": "Lånedatum",
+    "plannedReturn": "Planerad retur",
+    "confirmBorrow": "Bekräfta lån",
+    "borrowing": "Bearbetar…",
+    "cancel": "Avbryt",
+    "successTitle": "Boken är lånad!",
+    "successMessage": "Du kan hämta den i bibliotekets reception.",
+    "viewLoans": "Visa mina lån"
   }
 }

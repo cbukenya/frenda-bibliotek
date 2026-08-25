@@ -1,8 +1,10 @@
+using System.Security.Claims;
+
 namespace FrendaBibliotek.Api.Middleware;
 
 /// <summary>
 /// Scoped service that holds the current user's ID for the duration of a request.
-/// Populated by <see cref="UserContextMiddleware"/> from the X-User-Id header.
+/// Populated by <see cref="UserContextMiddleware"/> from JWT claims.
 /// </summary>
 public class UserContext
 {
@@ -17,8 +19,7 @@ public class UserContext
 }
 
 /// <summary>
-/// Middleware that reads the X-User-Id header and populates <see cref="UserContext"/>.
-/// Returns 400 if the header is missing or not a valid integer on routes that require it.
+/// Middleware that reads the user ID from JWT claims and populates <see cref="UserContext"/>.
 /// </summary>
 public class UserContextMiddleware
 {
@@ -28,8 +29,8 @@ public class UserContextMiddleware
 
     public async Task InvokeAsync(HttpContext context, UserContext userContext)
     {
-        if (context.Request.Headers.TryGetValue("X-User-Id", out var value)
-            && int.TryParse(value, out var userId))
+        var claim = context.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (claim is not null && int.TryParse(claim.Value, out var userId))
         {
             userContext.Set(userId);
         }

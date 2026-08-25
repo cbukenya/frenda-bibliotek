@@ -5,7 +5,9 @@ export interface Book {
   isbn: string;
   title: string;
   author: string;
+  authorId: number;
   genre: string;
+  genreId: number;
   description: string;
   publishedYear: number;
   totalPages: number;
@@ -13,6 +15,20 @@ export interface Book {
   totalCopies: number;
   availableCopies: number;
   avgReadingDays: number | null;
+}
+
+export interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  children?: Genre[];
+}
+
+export interface Author {
+  id: number;
+  name: string;
+  slug: string;
 }
 
 export interface BookDetail extends Book {
@@ -36,49 +52,128 @@ export interface User {
   email: string;
 }
 
-// ─── User context ─────────────────────────────────────────────────────────────
-
-const DEFAULT_USER_ID = 1;
-
-export function getCurrentUserId(): number {
-  if (typeof window === 'undefined') return DEFAULT_USER_ID;
-  const stored = localStorage.getItem('frenda_user_id');
-  return stored ? parseInt(stored, 10) : DEFAULT_USER_ID;
+export interface AuthResponse {
+  token: string;
+  user: User;
 }
 
-export function setCurrentUserId(id: number): void {
-  localStorage.setItem('frenda_user_id', String(id));
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+const TOKEN_KEY = 'frenda_token';
+const USER_KEY = 'frenda_user';
+
+export function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredUser(): User | null {
+  if (typeof window === 'undefined') return null;
+  const raw = localStorage.getItem(USER_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+export function isLoggedIn(): boolean {
+  return !!getToken();
+}
+
+function setAuth(token: string, user: User): void {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  // Set cookie for middleware route protection
+  document.cookie = `frenda_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
   window.dispatchEvent(new Event('frenda_user_changed'));
 }
 
-// Client-side fetches use relative URLs → Next.js rewrite proxy forwards to the API container.
+export function logout(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  document.cookie = 'frenda_token=; path=/; max-age=0';
+  window.location.href = '/login';
+}
+
+// ─── API Client ───────────────────────────────────────────────────────────────
+
 const API_BASE = '';
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const userId = getCurrentUserId();
+  const token = getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...options.headers as Record<string, string>,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-User-Id': String(userId),
-      ...options.headers,
-    },
+    headers,
   });
+
+  // If unauthorized and user had a token (expired), clear and redirect
+  if (res.status === 401) {
+    if (typeof window !== 'undefined' && token) {
+      logout();
+    }
+    throw new Error('Unauthorized');
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`API ${res.status}: ${text || res.statusText}`);
   }
 
-  // 204 No Content
   if (res.status === 204) return undefined as T;
   return res.json();
 }
 
+// ─── Auth endpoints (no token needed) ─────────────────────────────────────────
+
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(data.error || 'Login failed');
+  }
+
+  const data: AuthResponse = await res.json();
+  setAuth(data.token, data.user);
+  return data;
+}
+
+export async function register(name: string, email: string, password: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(data.error || 'Registration failed');
+  }
+
+  const data: AuthResponse = await res.json();
+  setAuth(data.token, data.user);
+  return data;
+}
+
 // ─── Books ────────────────────────────────────────────────────────────────────
 
-export const getBooks = (): Promise<Book[]> =>
-  apiFetch('/api/books');
+export const getBooks = (filters?: { genreId?: number; authorId?: number }): Promise<Book[]> => {
+  const params = new URLSearchParams();
+  if (filters?.genreId) params.set('genreId', String(filters.genreId));
+  if (filters?.authorId) params.set('authorId', String(filters.authorId));
+  const qs = params.toString();
+  return apiFetch(`/api/books${qs ? `?${qs}` : ''}`);
+};
 
 export const getTopBooks = (): Promise<Book[]> =>
   apiFetch('/api/books/top');
@@ -108,9 +203,19 @@ export const getUsers = (): Promise<User[]> =>
 export const getUser = (id: number): Promise<User> =>
   apiFetch(`/api/users/${id}`);
 
+// ─── Genres ───────────────────────────────────────────────────────────────────
+
+export const getGenreTree = (): Promise<Genre[]> =>
+  apiFetch('/api/genres/tree');
+
+export const getGenreAncestors = (id: number): Promise<Genre[]> =>
+  apiFetch(`/api/genres/${id}/ancestors`);
+
+export const getAuthors = (): Promise<Author[]> =>
+  apiFetch('/api/authors');
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Days until due (loans are 14 days). Returns negative if overdue. */
 export function daysUntilDue(borrowedAt: string): number {
   const due = new Date(borrowedAt);
   due.setDate(due.getDate() + 14);
@@ -123,26 +228,32 @@ export function formatDate(iso: string): string {
   });
 }
 
-/** Estimated reading time in hours based on 250wpm average and 250 words/page. */
-export function estReadingHours(totalPages: number): string {
-  const hours = Math.round((totalPages * 250) / 250 / 60);
-  return hours < 1 ? '<1h read' : `${hours}h read`;
+export function estReadingTime(totalPages: number): string {
+  if (!totalPages || totalPages <= 0) return '';
+  const hours = Math.round(totalPages / 40);
+  if (hours < 1) return '<1h read';
+  return `${hours}h read`;
 }
 
-/** Cover image URL — falls back to a genre-coloured gradient data URI. */
 export function coverUrl(book: Pick<Book, 'coverUrl' | 'genre' | 'title'>): string | null {
   return book.coverUrl ?? null;
 }
 
 const GENRE_EMOJI: Record<string, string> = {
-  'Programming':    '💻',
-  'Design':         '🎨',
-  'Psychology':     '🧠',
-  'History':        '📜',
-  'Science Fiction':'🚀',
-  'Memoir':         '📖',
-  'Self-Help':      '⭐',
-  'Philosophy':     '🏛️',
+  'Programming':      '💻',
+  'Agile & Craftsmanship': '💻',
+  'Design':           '🎨',
+  'UX Design':        '🎨',
+  'Psychology':       '🧠',
+  'History':          '📜',
+  'Science Fiction':  '🚀',
+  'Space Opera':      '🚀',
+  'Fantasy':          '🧙',
+  'Memoir':           '📖',
+  'Self-Help':        '⭐',
+  'Philosophy':       '🏛️',
+  'Fiction':          '📚',
+  'Non-Fiction':      '📚',
 };
 
 export function genreEmoji(genre: string): string {

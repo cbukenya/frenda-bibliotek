@@ -1,5 +1,23 @@
 namespace FrendaBibliotek.Api.DTOs;
 
+// ─── Genres ───────────────────────────────────────────────────────────────────
+
+public record GenreDto(
+    int Id,
+    string Name,
+    string Slug,
+    int? ParentId,
+    IEnumerable<GenreDto>? Children = null
+);
+
+// ─── Authors ──────────────────────────────────────────────────────────────────
+
+public record AuthorDto(
+    int Id,
+    string Name,
+    string Slug
+);
+
 // ─── Books ────────────────────────────────────────────────────────────────────
 
 public record BookSummaryDto(
@@ -7,8 +25,11 @@ public record BookSummaryDto(
     string ISBN,
     string Title,
     string Author,
+    int AuthorId,
     string Genre,
+    int GenreId,
     int PublishedYear,
+    int TotalPages,
     string? CoverUrl,
     int TotalCopies,
     int AvailableCopies,
@@ -20,7 +41,9 @@ public record BookDetailDto(
     string ISBN,
     string Title,
     string Author,
+    int AuthorId,
     string Genre,
+    int GenreId,
     string Description,
     int PublishedYear,
     int TotalPages,
@@ -50,3 +73,9 @@ public record LoanDto(
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 public record UserDto(int Id, string Name, string Email);
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+public record RegisterRequest(string Name, string Email, string Password);
+public record LoginRequest(string Email, string Password);
+public record AuthResponse(string Token, UserDto User);

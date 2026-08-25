@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FrendaBibliotek.Api.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825105432_InitialCreate")]
+    [Migration("20260825135813_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,35 @@ namespace FrendaBibliotek.Api.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Author", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Authors");
+                });
+
             modelBuilder.Entity("FrendaBibliotek.Api.Models.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -33,10 +62,8 @@ namespace FrendaBibliotek.Api.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CoverUrl")
                         .HasColumnType("text");
@@ -45,10 +72,8 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<int>("GenreId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ISBN")
                         .IsRequired()
@@ -67,6 +92,10 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("GenreId");
 
                     b.HasIndex("ISBN")
                         .IsUnique();
@@ -93,6 +122,37 @@ namespace FrendaBibliotek.Api.Data.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("BookCopies");
+                });
+
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("FrendaBibliotek.Api.Models.Loan", b =>
@@ -142,6 +202,10 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("text");
@@ -154,6 +218,25 @@ namespace FrendaBibliotek.Api.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Book", b =>
+                {
+                    b.HasOne("FrendaBibliotek.Api.Models.Author", "Author")
+                        .WithMany("Books")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FrendaBibliotek.Api.Models.Genre", "Genre")
+                        .WithMany("Books")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Genre");
+                });
+
             modelBuilder.Entity("FrendaBibliotek.Api.Models.BookCopy", b =>
                 {
                     b.HasOne("FrendaBibliotek.Api.Models.Book", "Book")
@@ -163,6 +246,16 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Book");
+                });
+
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Genre", b =>
+                {
+                    b.HasOne("FrendaBibliotek.Api.Models.Genre", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("FrendaBibliotek.Api.Models.Loan", b =>
@@ -184,6 +277,11 @@ namespace FrendaBibliotek.Api.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Author", b =>
+                {
+                    b.Navigation("Books");
+                });
+
             modelBuilder.Entity("FrendaBibliotek.Api.Models.Book", b =>
                 {
                     b.Navigation("Copies");
@@ -192,6 +290,13 @@ namespace FrendaBibliotek.Api.Data.Migrations
             modelBuilder.Entity("FrendaBibliotek.Api.Models.BookCopy", b =>
                 {
                     b.Navigation("Loans");
+                });
+
+            modelBuilder.Entity("FrendaBibliotek.Api.Models.Genre", b =>
+                {
+                    b.Navigation("Books");
+
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("FrendaBibliotek.Api.Models.User", b =>

@@ -1,35 +1,27 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { type Book, borrowBook, estReadingHours, genreEmoji } from '@/lib/api';
+import { type Book, estReadingTime, genreEmoji, isLoggedIn } from '@/lib/api';
 
 interface Props {
   book: Book;
   onBorrowed?: () => void;
 }
 
-export default function BookCard({ book, onBorrowed }: Props) {
+export default function BookCard({ book }: Props) {
   const t = useTranslations('bookCard');
-  const [loading, setLoading] = useState(false);
-  const [borrowed, setBorrowed] = useState(false);
   const available = book.availableCopies > 0;
 
-  const handleBorrow = async (e: React.MouseEvent) => {
+  const handleBorrowClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!available || loading || borrowed) return;
-    setLoading(true);
-    try {
-      await borrowBook(book.isbn);
-      setBorrowed(true);
-      onBorrowed?.();
-    } catch (err) {
-      alert((err as Error).message);
-    } finally {
-      setLoading(false);
+    if (!available) return;
+    if (!isLoggedIn()) {
+      window.location.href = '/login';
+      return;
     }
+    window.location.href = `/books/${book.id}/borrow`;
   };
 
   return (
@@ -64,19 +56,19 @@ export default function BookCard({ book, onBorrowed }: Props) {
             <div className="flex items-center gap-2 mb-4 text-on-surface-variant">
               <span className="material-symbols-outlined text-sm">schedule</span>
               <span className="font-label-sm text-label-sm">
-                {t('readingTime', { time: estReadingHours(book.totalPages) })}
+              {estReadingTime(book.totalPages) && t('readingTime', { time: estReadingTime(book.totalPages) })}
               </span>
             </div>
             <button
-              onClick={handleBorrow}
-              disabled={!available || loading || borrowed}
+              onClick={handleBorrowClick}
+              disabled={!available}
               className={`w-full py-2.5 rounded-lg font-label-md text-label-md transition-colors ${
-                available && !borrowed
+                available
                   ? 'bg-primary text-on-primary hover:opacity-90'
                   : 'bg-surface-container-highest text-on-surface-variant cursor-not-allowed opacity-70'
               }`}
             >
-              {loading ? t('borrowing') : borrowed ? t('borrowed') : t('borrow')}
+              {t('borrow')}
             </button>
           </div>
         </div>

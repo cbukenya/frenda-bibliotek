@@ -1,8 +1,11 @@
+using System.Text;
 using FrendaBibliotek.Api.Data;
 using FrendaBibliotek.Api.Data.Seed;
 using FrendaBibliotek.Api.Middleware;
 using FrendaBibliotek.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// JWT Authentication
+var jwtSecret = builder.Configuration["JWT_SECRET"] ?? "frenda-bibliotek-dev-secret-key-min-32-chars!!";
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt =>
+    {
+        opt.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "frenda-bibliotek",
+            ValidAudience = "frenda-bibliotek",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        };
+    });
+builder.Services.AddAuthorization();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -21,19 +42,21 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Book lending API — browse books, manage loans, and discover recommendations.",
     });
 
-    c.AddSecurityDefinition("UserId", new OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name = "X-User-Id",
-        Type = SecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Simulated user identity. Enter the ID of the borrower (e.g. 1 = Alice Lindgren).",
+        Description = "Enter your JWT token. Login via POST /api/auth/login to get one.",
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "UserId" }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
@@ -85,12 +108,12 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors();
-app.UseMiddleware<UserContextMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<UserContextMiddleware>();
 app.MapControllers();
 
 app.Run();
 
 // Expose Program to WebApplicationFactory in the test project
 public partial class Program { }
-

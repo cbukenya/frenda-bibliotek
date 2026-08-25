@@ -13,6 +13,8 @@ public interface IAppDbContext
 {
     DbSet<Book> Books { get; }
     DbSet<BookCopy> BookCopies { get; }
+    DbSet<Author> Authors { get; }
+    DbSet<Genre> Genres { get; }
     DbSet<User> Users { get; }
     DbSet<Loan> Loans { get; }
 
