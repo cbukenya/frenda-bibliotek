@@ -13,13 +13,15 @@ public class BookService : IBookService
 
     public async Task<IEnumerable<LoanDto>> GetMyLoansAsync(int userId)
     {
-        return await _db.Loans
+        var loans = await _db.Loans
             .Where(l => l.UserId == userId)
             .Include(l => l.BookCopy)
                 .ThenInclude(c => c.Book)
+                    .ThenInclude(b => b.Author)
             .OrderByDescending(l => l.BorrowedAt)
-            .Select(l => ToDto(l))
             .ToListAsync();
+
+        return loans.Select(ToDto);
     }
 
     public async Task<LoanDto> BorrowBookAsync(int userId, string isbn)
@@ -31,6 +33,7 @@ public class BookService : IBookService
             .Where(c => c.Book.ISBN == isbn &&
                         !c.Loans.Any(l => l.ReturnedAt == null))
             .Include(c => c.Book)
+                .ThenInclude(b => b.Author)
             .FirstOrDefaultAsync()
             ?? throw new BookNotAvailableException(isbn);
 
@@ -49,6 +52,7 @@ public class BookService : IBookService
         var created = await _db.Loans
             .Include(l => l.BookCopy)
                 .ThenInclude(c => c.Book)
+                    .ThenInclude(b => b.Author)
             .FirstAsync(l => l.Id == loan.Id);
 
         return ToDto(created);
@@ -59,6 +63,7 @@ public class BookService : IBookService
         var loan = await _db.Loans
             .Include(l => l.BookCopy)
                 .ThenInclude(c => c.Book)
+                    .ThenInclude(b => b.Author)
             .FirstOrDefaultAsync(l => l.Id == loanId)
             ?? throw new LoanNotFoundException(loanId);
 
@@ -79,7 +84,7 @@ public class BookService : IBookService
         l.BookCopy.BookId,
         l.BookCopy.Book.ISBN,
         l.BookCopy.Book.Title,
-        l.BookCopy.Book.Author,
+        l.BookCopy.Book.Author.Name,
         l.BookCopy.Book.CoverUrl,
         l.BorrowedAt,
         l.ReturnedAt

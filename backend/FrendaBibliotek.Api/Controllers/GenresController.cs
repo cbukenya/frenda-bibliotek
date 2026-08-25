@@ -19,7 +19,7 @@ public class GenresController : ControllerBase
     {
         var genres = await _db.Genres
             .OrderBy(g => g.Name)
-            .Select(g => new GenreDto(g.Id, g.Name, g.Slug, g.ParentId))
+            .Select(g => new GenreDto(g.Id, g.Name, g.Slug, g.ParentId, null))
             .ToListAsync();
 
         return Ok(genres);
@@ -47,7 +47,7 @@ public class GenresController : ControllerBase
         var children = await _db.Genres
             .Where(g => g.ParentId == id)
             .OrderBy(g => g.Name)
-            .Select(g => new GenreDto(g.Id, g.Name, g.Slug, g.ParentId))
+            .Select(g => new GenreDto(g.Id, g.Name, g.Slug, g.ParentId, null))
             .ToListAsync();
 
         return Ok(children);
