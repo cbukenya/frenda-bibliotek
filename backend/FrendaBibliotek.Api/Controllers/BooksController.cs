@@ -9,9 +9,9 @@ namespace FrendaBibliotek.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IAppDbContext _db;
 
-    public BooksController(AppDbContext db) => _db = db;
+    public BooksController(IAppDbContext db) => _db = db;
 
     // GET /api/books
     [HttpGet]

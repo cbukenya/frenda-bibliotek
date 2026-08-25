@@ -7,9 +7,9 @@ namespace FrendaBibliotek.Api.Services;
 
 public class LoanService : ILoanService
 {
-    private readonly AppDbContext _db;
+    private readonly IAppDbContext _db;
 
-    public LoanService(AppDbContext db) => _db = db;
+    public LoanService(IAppDbContext db) => _db = db;
 
     public async Task<IEnumerable<LoanDto>> GetMyLoansAsync(int userId)
     {
@@ -44,11 +44,13 @@ public class LoanService : ILoanService
         await _db.SaveChangesAsync();
         await tx.CommitAsync();
 
-        // Reload with navigation properties for the response
-        await _db.Entry(loan).Reference(l => l.BookCopy).LoadAsync();
-        await _db.Entry(loan.BookCopy).Reference(c => c.Book).LoadAsync();
+        // Re-query with navigation properties for the response DTO
+        var created = await _db.Loans
+            .Include(l => l.BookCopy)
+                .ThenInclude(c => c.Book)
+            .FirstAsync(l => l.Id == loan.Id);
 
-        return ToDto(loan);
+        return ToDto(created);
     }
 
     public async Task<LoanDto> ReturnLoanAsync(int userId, int loanId)

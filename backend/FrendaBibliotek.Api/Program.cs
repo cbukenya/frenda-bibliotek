@@ -48,6 +48,10 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(connectionString));
 
+// Register the interface so controllers and services can depend on IAppDbContext
+// rather than the concrete type, enabling unit testing without a real database.
+builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
 // Application services
 builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<UserContext>();
