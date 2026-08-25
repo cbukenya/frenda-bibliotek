@@ -2,15 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useRef, useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 
 
 export default function NavBar() {
   const t = useTranslations('nav');
-  const tc = useTranslations('common');
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' || pathname === '/sv' : pathname.includes(href);
 
@@ -73,20 +84,31 @@ export default function NavBar() {
             </div>
 
             {/* Locale switcher */}
-            <div className="flex gap-1">
-              {(['en', 'sv'] as const).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => switchLocale(lang)}
-                  className={`text-xs font-bold px-2 py-1 rounded transition-colors ${
-                    locale === lang
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface-variant hover:bg-surface-container-low'
-                  }`}
-                >
-                  {tc(lang === 'en' ? 'english' : 'swedish')}
-                </button>
-              ))}
+            <div className="relative" ref={langRef}>
+              <button
+                onClick={() => setLangOpen(v => !v)}
+                className="flex items-center gap-1 text-xs font-bold px-2 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-low transition-colors"
+              >
+                {locale.toUpperCase()}
+                <span className="material-symbols-outlined text-[16px]">expand_more</span>
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 mt-1 w-40 bg-surface-container-lowest rounded-lg shadow-lg border border-outline-variant/20 py-1 z-50">
+                  {([{ code: 'en', label: 'EN - English' }, { code: 'sv', label: 'SV - Svenska' }] as const).map(({ code, label }) => (
+                    <button
+                      key={code}
+                      onClick={() => { switchLocale(code); setLangOpen(false); }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                        locale === code
+                          ? 'bg-primary-container text-primary font-bold'
+                          : 'text-on-surface hover:bg-surface-container-low'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Notifications */}
