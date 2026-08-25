@@ -85,8 +85,8 @@
     "langLabel": "Språk"
   },
   "login": {
-    "title": "Frenda Bibliotek",
-    "subtitle": "Välkommen tillbaka. Logga in för att fortsätta.",
+    "title": "Logga in",
+    "subtitle": "Välkommen tillbaka. Logga in för att se och hantera dina lånade böcker.",
     "emailLabel": "E-postadress",
     "emailPlaceholder": "namn@exempel.se",
     "passwordLabel": "Lösenord",
@@ -98,8 +98,8 @@
     "createAccount": "Skapa konto"
   },
   "register": {
-    "title": "Frenda Bibliotek",
-    "subtitle": "Skapa ett konto för att få tillgång till tusentals böcker och resurser.",
+    "title": "Skapa konto",
+    "subtitle": "Skapa ett konto för att låna böcker och få personliga rekommendationer.",
     "nameLabel": "Fullständigt namn",
     "namePlaceholder": "Lars Larsson",
     "emailLabel": "E-postadress",

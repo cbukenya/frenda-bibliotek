@@ -85,8 +85,8 @@
     "langLabel": "Language"
   },
   "login": {
-    "title": "Frenda Bibliotek",
-    "subtitle": "Welcome back. Log in to continue.",
+    "title": "Log in",
+    "subtitle": "Welcome back. Login to see and manage your loaned books.",
     "emailLabel": "Email address",
     "emailPlaceholder": "name@example.com",
     "passwordLabel": "Password",
@@ -98,8 +98,8 @@
     "createAccount": "Create account"
   },
   "register": {
-    "title": "Frenda Bibliotek",
-    "subtitle": "Create an account to access thousands of books and resources.",
+    "title": "Create account",
+    "subtitle": "Create an account to loan a book and get personalized recommendations.",
     "nameLabel": "Full name",
     "namePlaceholder": "Jane Doe",
     "emailLabel": "Email address",
