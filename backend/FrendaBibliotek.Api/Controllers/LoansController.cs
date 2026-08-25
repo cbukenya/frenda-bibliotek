@@ -9,12 +9,12 @@ namespace FrendaBibliotek.Api.Controllers;
 [Route("api/[controller]")]
 public class LoansController : ControllerBase
 {
-    private readonly ILoanService _loanService;
+    private readonly IBookService _bookService;
     private readonly UserContext _userContext;
 
-    public LoansController(ILoanService loanService, UserContext userContext)
+    public LoansController(IBookService bookService, UserContext userContext)
     {
-        _loanService = loanService;
+        _bookService = bookService;
         _userContext = userContext;
     }
 
@@ -33,7 +33,7 @@ public class LoansController : ControllerBase
         var guard = RequireUser(out var userId);
         if (guard is not null) return guard;
 
-        var loans = await _loanService.GetMyLoansAsync(userId);
+        var loans = await _bookService.GetMyLoansAsync(userId);
         return Ok(loans);
     }
 
@@ -46,7 +46,7 @@ public class LoansController : ControllerBase
 
         try
         {
-            var loan = await _loanService.BorrowBookAsync(userId, request.BookId);
+            var loan = await _bookService.BorrowBookAsync(userId, request.ISBN);
             return CreatedAtAction(nameof(GetMyLoans), loan);
         }
         catch (BookNotAvailableException ex)
@@ -64,7 +64,7 @@ public class LoansController : ControllerBase
 
         try
         {
-            var loan = await _loanService.ReturnLoanAsync(userId, id);
+            var loan = await _bookService.ReturnLoanAsync(userId, id);
             return Ok(loan);
         }
         catch (LoanNotFoundException ex)

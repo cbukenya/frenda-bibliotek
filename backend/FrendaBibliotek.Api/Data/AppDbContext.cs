@@ -45,6 +45,8 @@ public class AppDbContext : DbContext, IAppDbContext
         // Required string fields
         modelBuilder.Entity<Book>(b =>
         {
+            b.Property(x => x.ISBN).IsRequired().HasMaxLength(20);
+            b.HasIndex(x => x.ISBN).IsUnique();
             b.Property(x => x.Title).IsRequired().HasMaxLength(300);
             b.Property(x => x.Author).IsRequired().HasMaxLength(200);
             b.Property(x => x.Genre).IsRequired().HasMaxLength(100);

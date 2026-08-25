@@ -53,7 +53,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
 // Application services
-builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<UserContext>();
 
 // CORS — allow frontend dev server

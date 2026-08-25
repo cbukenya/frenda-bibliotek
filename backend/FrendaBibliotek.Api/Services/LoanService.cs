@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FrendaBibliotek.Api.Services;
 
-public class LoanService : ILoanService
+public class BookService : IBookService
 {
     private readonly IAppDbContext _db;
 
-    public LoanService(IAppDbContext db) => _db = db;
+    public BookService(IAppDbContext db) => _db = db;
 
     public async Task<IEnumerable<LoanDto>> GetMyLoansAsync(int userId)
     {
@@ -22,16 +22,17 @@ public class LoanService : ILoanService
             .ToListAsync();
     }
 
-    public async Task<LoanDto> BorrowBookAsync(int userId, int bookId)
+    public async Task<LoanDto> BorrowBookAsync(int userId, string isbn)
     {
         await using var tx = await _db.Database.BeginTransactionAsync();
 
-        // Find first available copy (no active loan)
+        // Find first available copy for the given ISBN (no active loan)
         var copy = await _db.BookCopies
-            .Where(c => c.BookId == bookId &&
+            .Where(c => c.Book.ISBN == isbn &&
                         !c.Loans.Any(l => l.ReturnedAt == null))
+            .Include(c => c.Book)
             .FirstOrDefaultAsync()
-            ?? throw new BookNotAvailableException(bookId);
+            ?? throw new BookNotAvailableException(isbn);
 
         var loan = new Loan
         {
@@ -76,6 +77,7 @@ public class LoanService : ILoanService
     private static LoanDto ToDto(Loan l) => new(
         l.Id,
         l.BookCopy.BookId,
+        l.BookCopy.Book.ISBN,
         l.BookCopy.Book.Title,
         l.BookCopy.Book.Author,
         l.BookCopy.Book.CoverUrl,
