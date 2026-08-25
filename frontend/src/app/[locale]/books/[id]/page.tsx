@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getBook, borrowBook, type BookDetail, genreEmoji, estReadingTime } from '@/lib/api';
+import { getBook, type BookDetail, genreEmoji, estReadingTime, isLoggedIn } from '@/lib/api';
 
 export default function BookDetailPage() {
   const t = useTranslations('bookDetail');
@@ -12,8 +12,6 @@ export default function BookDetailPage() {
   const router = useRouter();
   const [book, setBook] = useState<BookDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [borrowing, setBorrowing] = useState(false);
-  const [borrowed, setBorrowed] = useState(false);
 
   useEffect(() => {
     getBook(Number(id))
@@ -22,18 +20,13 @@ export default function BookDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleBorrow = async () => {
+  const handleBorrow = () => {
     if (!book) return;
-    setBorrowing(true);
-    try {
-      await borrowBook(book.isbn);
-      setBorrowed(true);
-      setBook(b => b ? { ...b, availableCopies: b.availableCopies - 1 } : b);
-    } catch (err) {
-      alert((err as Error).message);
-    } finally {
-      setBorrowing(false);
+    if (!isLoggedIn()) {
+      window.location.href = '/login';
+      return;
     }
+    window.location.href = `/books/${book.id}/borrow`;
   };
 
   if (loading) return (
@@ -123,11 +116,11 @@ export default function BookDetailPage() {
             <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-outline-variant/30">
               <button
                 onClick={handleBorrow}
-                disabled={!available || borrowing || borrowed}
+                disabled={!available}
                 className="bg-primary text-on-primary font-label-md text-label-md px-8 py-3.5 rounded-lg shadow-sm hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <span className="material-symbols-outlined">library_add</span>
-                {borrowing ? t('borrowing') : borrowed ? t('borrowed') : t('borrowBook')}
+                {t('borrowBook')}
               </button>
               <Link
                 href="/loans"

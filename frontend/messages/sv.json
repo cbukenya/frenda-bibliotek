@@ -119,5 +119,22 @@
     "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
     "hasAccount": "Har du redan ett konto?",
     "loginLink": "Logga in"
+  },
+  "borrowPage": {
+    "back": "Tillbaka",
+    "available": "{count} tillgängliga",
+    "unavailable": "Alla utlånade",
+    "loanDetails": "Låndetaljer",
+    "returnDateLabel": "Planerat returdatum",
+    "returnDateHint": "Standard låneperiod är 14 dagar. Du kan lämna tillbaka tidigare.",
+    "bookTitle": "Bok",
+    "loanDate": "Lånedatum",
+    "plannedReturn": "Planerad retur",
+    "confirmBorrow": "Bekräfta lån",
+    "borrowing": "Bearbetar…",
+    "cancel": "Avbryt",
+    "successTitle": "Boken är lånad!",
+    "successMessage": "Du kan hämta den i bibliotekets reception.",
+    "viewLoans": "Visa mina lån"
   }
 }

@@ -119,5 +119,22 @@
     "passwordTooShort": "Password must be at least 6 characters.",
     "hasAccount": "Already have an account?",
     "loginLink": "Log in"
+  },
+  "borrowPage": {
+    "back": "Back",
+    "available": "{count} available",
+    "unavailable": "All copies out",
+    "loanDetails": "Loan details",
+    "returnDateLabel": "Planned return date",
+    "returnDateHint": "Standard loan period is 14 days. You can return earlier.",
+    "bookTitle": "Book",
+    "loanDate": "Loan date",
+    "plannedReturn": "Planned return",
+    "confirmBorrow": "Confirm loan",
+    "borrowing": "Processing…",
+    "cancel": "Cancel",
+    "successTitle": "Book loaned!",
+    "successMessage": "You can pick it up at the library front desk.",
+    "viewLoans": "View my loans"
   }
 }
