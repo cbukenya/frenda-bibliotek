@@ -1,12 +1,12 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getBooks, type Book } from '@/lib/api';
 import BookCard from '@/components/BookCard';
 
-function BrowseContent() {
+export default function BrowsePage() {
   const t = useTranslations('browse');
   const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
@@ -32,58 +32,55 @@ function BrowseContent() {
   }, [books, query]);
 
   return (
-    <div className="container">
-      <div className="page-header">
-        <h1 className="page-title">{t('title')}</h1>
-        <p className="page-subtitle">{t('subtitle')}</p>
-      </div>
+    <div className="pt-24 pb-24 md:pb-8">
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8">
+        {/* Page header */}
+        <header className="mb-12">
+          <h1 className="font-headline-xl text-headline-xl text-primary mb-2 hidden md:block">{t('title')}</h1>
+          <h1 className="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2 md:hidden">{t('title')}</h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">{t('subtitle')}</p>
+        </header>
 
-      <div className="search-bar">
-        <svg className="search-bar__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          type="search"
-          placeholder={t('searchPlaceholder')}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-        />
-      </div>
+        {/* Search bar */}
+        <div className="relative mb-10 max-w-lg">
+          <input
+            type="search"
+            placeholder={t('searchPlaceholder')}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full bg-[#F1F3F5] border-none rounded-full py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:bg-white transition-all outline-none"
+          />
+          <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">search</span>
+        </div>
 
-      {loading ? (
-        <div className="book-grid">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ borderRadius: 12, overflow: 'hidden', background: '#fff', boxShadow: 'var(--shadow-sm)' }}>
-              <div className="skeleton" style={{ aspectRatio: '3/4' }} />
-              <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                <div className="skeleton" style={{ height: 16, borderRadius: 4 }} />
-                <div className="skeleton" style={{ height: 12, width: '60%', borderRadius: 4 }} />
-                <div className="skeleton" style={{ height: 34, borderRadius: 6, marginTop: '.5rem' }} />
+        {/* Book grid */}
+        {loading ? (
+          <div className="bento-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm animate-pulse">
+                <div className="h-64 bg-surface-container-high" />
+                <div className="p-gutter space-y-3">
+                  <div className="h-4 bg-surface-container-high rounded w-3/4" />
+                  <div className="h-3 bg-surface-container-high rounded w-1/2" />
+                  <div className="h-10 bg-surface-container-high rounded mt-4" />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state__icon">📭</div>
-          <div className="empty-state__title">{t('noResults')}</div>
-          <p>{t('noResultsHint')}</p>
-        </div>
-      ) : (
-        <div className="book-grid">
-          {filtered.map(book => (
-            <BookCard key={book.id} book={book} onBorrowed={load} />
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
+            <span className="material-symbols-outlined text-6xl mb-4 text-outline">inbox</span>
+            <p className="font-headline-sm text-headline-sm mb-2">{t('noResults')}</p>
+            <p className="font-body-md text-body-md">{t('noResultsHint')}</p>
+          </div>
+        ) : (
+          <section className="bento-grid">
+            {filtered.map(book => (
+              <BookCard key={book.id} book={book} onBorrowed={load} />
+            ))}
+          </section>
+        )}
+      </main>
     </div>
-  );
-}
-
-export default function BrowsePage() {
-  return (
-    <Suspense>
-      <BrowseContent />
-    </Suspense>
   );
 }

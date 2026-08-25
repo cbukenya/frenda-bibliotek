@@ -26,105 +26,99 @@ export default function LoansPage() {
   const history = loans.filter(l => l.returnedAt);
 
   return (
-    <div className="page--dark">
-      <div className="container" style={{ paddingTop: '2.5rem' }}>
-        <div className="page-header">
-          <h1 className="page-title">{t('title')}</h1>
-          <p className="page-subtitle">{t('subtitle')}</p>
-        </div>
+    <div className="pt-24 pb-20 md:pb-8">
+      <main className="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8">
 
-        <div className="section-header">
-          <h2 className="section-title section-title--light">
-            {t('activeLoans')}
+        {/* Header */}
+        <header className="mb-12">
+          <h1 className="font-headline-xl text-headline-xl text-primary mb-2">{t('title')}</h1>
+          <p className="font-body-lg text-body-lg text-on-surface-variant">{t('subtitle')}</p>
+        </header>
+
+        {/* Active loans */}
+        <section className="mb-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-headline-md text-headline-md">{t('activeLoans')}</h2>
             {active.length > 0 && (
-              <span className="count-badge">{t('bookCount', { count: active.length })}</span>
+              <span className="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full">
+                {t('bookCount', { count: active.length })}
+              </span>
             )}
-          </h2>
-        </div>
+          </div>
 
-        {loading ? (
-          <div className="loan-grid">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} style={{ borderRadius: 12, overflow: 'hidden', background: 'var(--dark-card)', border: '1px solid var(--dark-border)' }}>
-                <div className="skeleton" style={{ aspectRatio: '16/9' }} />
-                <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '.5rem' }}>
-                  <div className="skeleton" style={{ height: 16, borderRadius: 4 }} />
-                  <div className="skeleton" style={{ height: 12, width: '50%', borderRadius: 4 }} />
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm animate-pulse">
+                  <div className="h-48 bg-surface-container-high" />
+                  <div className="p-gutter space-y-3">
+                    <div className="h-4 bg-surface-container-high rounded w-3/4" />
+                    <div className="h-3 bg-surface-container-high rounded w-1/2" />
+                    <div className="h-10 bg-surface-container-high rounded mt-4" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : active.length === 0 ? (
-          <div className="empty-state" style={{ color: 'var(--gray-400)' }}>
-            <div className="empty-state__icon">📭</div>
-            <div className="empty-state__title" style={{ color: 'var(--gray-300)' }}>{t('noActiveTitle')}</div>
-            <p>
-              {t('noActiveHint')}{' '}
-              <Link href="/" style={{ color: 'var(--navy-light)' }}>{t('browseLink')}</Link>
-            </p>
-          </div>
-        ) : (
-          <div className="loan-grid">
-            {active.map(loan => (
-              <LoanCard key={loan.id} loan={loan} onReturned={load} />
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          ) : active.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-on-surface-variant">
+              <span className="material-symbols-outlined text-6xl mb-4 text-outline">inbox</span>
+              <p className="font-headline-sm text-headline-sm mb-2">{t('noActiveTitle')}</p>
+              <p className="font-body-md text-body-md">
+                {t('noActiveHint')}{' '}
+                <Link href="/" className="text-primary font-label-md">{t('browseLink')}</Link>
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+              {active.map(loan => (
+                <LoanCard key={loan.id} loan={loan} onReturned={load} />
+              ))}
+            </div>
+          )}
+        </section>
 
+        {/* Lending history */}
         {history.length > 0 && (
-          <>
-            <div className="section-header" style={{ marginTop: '2rem' }}>
-              <h2 className="section-title section-title--light">{t('history')}</h2>
-              <span className="section-link section-link--light">{t('historyCount', { count: history.length })}</span>
+          <section>
+            <h2 className="font-headline-md text-headline-md text-text-main mb-6">{t('history')}</h2>
+            <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(71,80,144,0.08)] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm border-b border-outline-variant/30">
+                      <th className="py-4 px-6">{t('colBookTitle')}</th>
+                      <th className="py-4 px-6 hidden sm:table-cell">{t('colAuthor')}</th>
+                      <th className="py-4 px-6 hidden md:table-cell">{t('colBorrowed')}</th>
+                      <th className="py-4 px-6">{t('colReturned')}</th>
+                      <th className="py-4 px-6 text-right">{t('colStatus')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="font-body-sm text-body-sm divide-y divide-outline-variant/20">
+                    {history.map(loan => {
+                      const due = new Date(loan.borrowedAt);
+                      due.setDate(due.getDate() + 14);
+                      const late = new Date(loan.returnedAt!) > due;
+                      return (
+                        <tr key={loan.id} className="hover:bg-surface-container-low/50 transition-colors">
+                          <td className="py-4 px-6 font-medium">{loan.bookTitle}</td>
+                          <td className="py-4 px-6 text-on-surface-variant hidden sm:table-cell">{loan.bookAuthor}</td>
+                          <td className="py-4 px-6 text-on-surface-variant hidden md:table-cell">{formatDate(loan.borrowedAt)}</td>
+                          <td className="py-4 px-6 text-on-surface-variant">{formatDate(loan.returnedAt!)}</td>
+                          <td className="py-4 px-6 text-right">
+                            <span className={`px-2 py-1 rounded-full text-[10px] ${late ? 'bg-error/10 text-error' : 'bg-status-available/10 text-status-available'}`}>
+                              {late ? t('statusLate') : t('statusOnTime')}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-
-            <div className="history-section">
-              <table className="history-table">
-                <thead>
-                  <tr>
-                    <th>{t('colBookTitle')}</th>
-                    <th>{t('colAuthor')}</th>
-                    <th>{t('colBorrowed')}</th>
-                    <th>{t('colReturned')}</th>
-                    <th>{t('colStatus')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map(loan => {
-                    const due = new Date(loan.borrowedAt);
-                    due.setDate(due.getDate() + 14);
-                    const late = new Date(loan.returnedAt!) > due;
-
-                    return (
-                      <tr key={loan.id}>
-                        <td>
-                          <div className="history-book-cell">
-                            <div style={{ width: 36, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#252840', borderRadius: 3, fontSize: '1.2rem', flexShrink: 0 }}>
-                              {loan.coverUrl
-                                ? <img src={loan.coverUrl} alt={loan.bookTitle} className="history-thumb" />
-                                : '📚'
-                              }
-                            </div>
-                            {loan.bookTitle}
-                          </div>
-                        </td>
-                        <td style={{ color: 'var(--gray-400)' }}>{loan.bookAuthor}</td>
-                        <td>{formatDate(loan.borrowedAt)}</td>
-                        <td>{formatDate(loan.returnedAt!)}</td>
-                        <td>
-                          <span className={`book-card__badge ${late ? 'badge--late' : 'badge--returned'}`} style={{ position: 'static', display: 'inline-block' }}>
-                            {late ? t('statusLate') : t('statusOnTime')}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
+          </section>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import UserSwitcher from '@/components/UserSwitcher';
 
 export const metadata: Metadata = {
   title: { default: 'Frenda Bibliotek', template: '%s | Frenda Bibliotek' },
-  description: 'A curated library of technical and professional literature. Browse, borrow, and discover your next great read.',
+  description: 'A curated library of technical and professional literature.',
 };
 
 export default async function LocaleLayout({
@@ -21,7 +21,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <NavBar />
-      <main className="page">{children}</main>
+      {children}
       <UserSwitcher />
     </NextIntlClientProvider>
   );

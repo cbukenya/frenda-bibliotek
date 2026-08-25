@@ -13,95 +13,137 @@ export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [query, setQuery] = useState('');
 
   useEffect(() => {
-    const load = () => {
-      getUser(getCurrentUserId()).then(setUser).catch(() => null);
-    };
+    const load = () => getUser(getCurrentUserId()).then(setUser).catch(() => null);
     load();
     window.addEventListener('frenda_user_changed', load);
     return () => window.removeEventListener('frenda_user_changed', load);
   }, []);
 
-  const initials = user
-    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : '?';
-
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' || pathname === '/sv' : pathname.includes(href);
 
   const switchLocale = (next: string) => {
-    // Strip current locale prefix if present, then prepend new one
     const stripped = pathname.replace(/^\/(en|sv)/, '') || '/';
     router.push(next === 'en' ? stripped : `/${next}${stripped}`);
   };
 
+  const initials = user
+    ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+    : '?';
+
   return (
-    <nav className="nav">
-      <Link href="/" className="nav-logo">{t('logo')}</Link>
-
-      <ul className="nav-links">
-        {([
-          { href: '/',         label: t('browse') },
-          { href: '/loans',    label: t('myLoans') },
-          { href: '/discover', label: t('discover') },
-        ] as const).map(({ href, label }) => (
-          <li key={href}>
-            <Link href={href} className={isActive(href) ? 'active' : ''}>{label}</Link>
-          </li>
-        ))}
-      </ul>
-
-      <div className="nav-search">
-        <svg className="nav-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          type="search"
-          placeholder={t('searchPlaceholder')}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && query.trim()) {
-              router.push(`/?q=${encodeURIComponent(query.trim())}`);
-            }
-          }}
-        />
-      </div>
-
-      <div className="nav-right">
-        {/* Language switcher */}
-        <div style={{ display: 'flex', gap: '.25rem' }}>
-          {(['en', 'sv'] as const).map(lang => (
-            <button
-              key={lang}
-              onClick={() => switchLocale(lang)}
-              className="nav-icon-btn"
-              style={{
-                fontSize: '.7rem',
-                fontWeight: 700,
-                width: 'auto',
-                padding: '0 .5rem',
-                borderRadius: 4,
-                background: locale === lang ? 'var(--navy)' : undefined,
-                color: locale === lang ? '#fff' : undefined,
-              }}
-              aria-label={tc(lang === 'en' ? 'english' : 'swedish')}
+    <>
+      {/* ── Desktop top nav ────────────────────────────────────── */}
+      <header className="fixed top-0 w-full z-50 bg-surface/80 border-b border-outline-variant/30 shadow-sm backdrop-blur-md hidden md:block">
+        <div className="flex justify-between items-center h-16 px-margin-desktop max-w-container-max mx-auto">
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              className="font-headline-md text-headline-md font-bold text-primary"
             >
-              {tc(lang === 'en' ? 'english' : 'swedish')}
-            </button>
-          ))}
-        </div>
+              {t('logo')}
+            </Link>
 
-        <button className="nav-icon-btn" aria-label={t('notifications')}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-        </button>
-        <div className="nav-avatar" title={user?.name ?? 'User'}>{initials}</div>
-      </div>
-    </nav>
+            <nav className="flex gap-6 items-center">
+              {([
+                { href: '/',         label: t('browse')   },
+                { href: '/loans',    label: t('myLoans')  },
+                { href: '/discover', label: t('discover') },
+              ] as const).map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`pb-1 font-label-md text-label-md transition-all duration-150 ease-in-out ${
+                    isActive(href)
+                      ? 'text-primary border-primary border-b-2'
+                      : 'text-on-surface-variant'
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Search */}
+            <div className="relative">
+              <input
+                className="bg-[#F1F3F5] border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:bg-white transition-all w-64 outline-none"
+                placeholder={t('searchPlaceholder')}
+                type="search"
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    const v = (e.target as HTMLInputElement).value.trim();
+                    if (v) router.push(`/?q=${encodeURIComponent(v)}`);
+                  }
+                }}
+              />
+              <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">
+                search
+              </span>
+            </div>
+
+            {/* Locale switcher */}
+            <div className="flex gap-1">
+              {(['en', 'sv'] as const).map(lang => (
+                <button
+                  key={lang}
+                  onClick={() => switchLocale(lang)}
+                  className={`text-xs font-bold px-2 py-1 rounded transition-colors ${
+                    locale === lang
+                      ? 'bg-primary text-on-primary'
+                      : 'text-on-surface-variant hover:bg-surface-container-low'
+                  }`}
+                >
+                  {tc(lang === 'en' ? 'english' : 'swedish')}
+                </button>
+              ))}
+            </div>
+
+            {/* Notifications */}
+            <button className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors relative">
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
+            </button>
+
+            {/* Avatar */}
+            <div
+              className="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-xs font-bold border border-outline-variant cursor-pointer"
+              title={user?.name}
+            >
+              {initials}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Mobile bottom nav ──────────────────────────────────── */}
+      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 md:hidden bg-surface border-t border-outline-variant/30 shadow-[0_-4px_20px_rgba(71,80,144,0.08)]">
+        {([
+          { href: '/',         icon: 'library_books', label: t('browse')   },
+          { href: '/loans',    icon: 'book_4',        label: t('myLoans')  },
+          { href: '/discover', icon: 'explore',       label: t('discover') },
+        ] as const).map(({ href, icon, label }) => {
+          const active = isActive(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`flex flex-col items-center justify-center rounded-xl px-4 py-1 transition-all ${
+                active ? 'bg-primary-container text-on-primary' : 'text-on-surface-variant'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-xl mb-0.5 ${active ? 'filled' : ''}`}>
+                {icon}
+              </span>
+              <span className="font-label-sm text-[10px]">{label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    </>
   );
 }
