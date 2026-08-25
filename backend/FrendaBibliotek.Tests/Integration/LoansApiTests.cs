@@ -10,6 +10,7 @@ namespace FrendaBibliotek.Tests.Integration;
 public class LoansApiTests : IClassFixture<ApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly ApiFactory _factory;
 
     // Alice = user 1, seeded with 2 active loans
     private const int AliceId = 1;
@@ -18,6 +19,7 @@ public class LoansApiTests : IClassFixture<ApiFactory>
 
     public LoansApiTests(ApiFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
     }
 
@@ -32,7 +34,8 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task GetMyLoans_WithoutAuth_Returns401()
     {
-        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = null;
         var response = await client.GetAsync("/api/loans");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -70,7 +73,8 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task BorrowBook_WithoutAuth_Returns401()
     {
-        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = null;
         var response = await client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780465050659"));
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }

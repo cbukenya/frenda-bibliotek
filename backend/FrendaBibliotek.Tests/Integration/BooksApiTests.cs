@@ -10,9 +10,11 @@ namespace FrendaBibliotek.Tests.Integration;
 public class BooksApiTests : IClassFixture<ApiFactory>
 {
     private readonly HttpClient _client;
+    private readonly ApiFactory _factory;
 
     public BooksApiTests(ApiFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
         // Authenticate as Alice (user 1) for all requests
         _client.DefaultRequestHeaders.Authorization =
@@ -34,7 +36,8 @@ public class BooksApiTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task GetBooks_WithoutAuth_Returns401()
     {
-        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = null;
         var response = await client.GetAsync("/api/books");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
