@@ -12,16 +12,16 @@ public static class DataSeeder
         // ─── Books ────────────────────────────────────────────────────────────
         var books = new List<Book>
         {
-            new() { Title = "The Design of Everyday Things", Author = "Don Norman", Genre = "Design", Description = "A powerful primer on how design serves as the interface between objects and users.", TotalPages = 368, PublishedYear = 2013 },
-            new() { Title = "Clean Code", Author = "Robert C. Martin", Genre = "Programming", Description = "A handbook of agile software craftsmanship covering principles and patterns.", TotalPages = 464, PublishedYear = 2008 },
-            new() { Title = "Thinking, Fast and Slow", Author = "Daniel Kahneman", Genre = "Psychology", Description = "An exploration of the two systems that drive the way we think.", TotalPages = 512, PublishedYear = 2011 },
-            new() { Title = "Sapiens", Author = "Yuval Noah Harari", Genre = "History", Description = "A brief history of humankind from the Stone Age to the twenty-first century.", TotalPages = 443, PublishedYear = 2011 },
-            new() { Title = "The Pragmatic Programmer", Author = "David Thomas & Andrew Hunt", Genre = "Programming", Description = "Your journey to mastery — timeless advice on the craft of software development.", TotalPages = 352, PublishedYear = 2019 },
-            new() { Title = "Dune", Author = "Frank Herbert", Genre = "Science Fiction", Description = "The story of Paul Atreides on a desert planet that is the most valuable in the universe.", TotalPages = 688, PublishedYear = 1965 },
-            new() { Title = "Educated", Author = "Tara Westover", Genre = "Memoir", Description = "A memoir about a young woman who kept out of school until age 17, then earns a PhD from Cambridge.", TotalPages = 352, PublishedYear = 2018 },
-            new() { Title = "Atomic Habits", Author = "James Clear", Genre = "Self-Help", Description = "An easy and proven way to build good habits and break bad ones.", TotalPages = 320, PublishedYear = 2018 },
-            new() { Title = "The Hitchhiker's Guide to the Galaxy", Author = "Douglas Adams", Genre = "Science Fiction", Description = "The hitchhiker's guide to everything — start with a bathrobe.", TotalPages = 193, PublishedYear = 1979 },
-            new() { Title = "Meditations", Author = "Marcus Aurelius", Genre = "Philosophy", Description = "Personal writings of the Roman Emperor — a cornerstone of Stoic philosophy.", TotalPages = 254, PublishedYear = 180 },
+            new() { ISBN = "9780465050659", Title = "The Design of Everyday Things", Author = "Don Norman", Genre = "Design", Description = "A powerful primer on how design serves as the interface between objects and users.", TotalPages = 368, PublishedYear = 2013 },
+            new() { ISBN = "9780132350884", Title = "Clean Code", Author = "Robert C. Martin", Genre = "Programming", Description = "A handbook of agile software craftsmanship covering principles and patterns.", TotalPages = 464, PublishedYear = 2008 },
+            new() { ISBN = "9780374533557", Title = "Thinking, Fast and Slow", Author = "Daniel Kahneman", Genre = "Psychology", Description = "An exploration of the two systems that drive the way we think.", TotalPages = 512, PublishedYear = 2011 },
+            new() { ISBN = "9780062316097", Title = "Sapiens", Author = "Yuval Noah Harari", Genre = "History", Description = "A brief history of humankind from the Stone Age to the twenty-first century.", TotalPages = 443, PublishedYear = 2011 },
+            new() { ISBN = "9780135957059", Title = "The Pragmatic Programmer", Author = "David Thomas & Andrew Hunt", Genre = "Programming", Description = "Your journey to mastery — timeless advice on the craft of software development.", TotalPages = 352, PublishedYear = 2019 },
+            new() { ISBN = "9780441013593", Title = "Dune", Author = "Frank Herbert", Genre = "Science Fiction", Description = "The story of Paul Atreides on a desert planet that is the most valuable in the universe.", TotalPages = 688, PublishedYear = 1965 },
+            new() { ISBN = "9780399590504", Title = "Educated", Author = "Tara Westover", Genre = "Memoir", Description = "A memoir about a young woman who kept out of school until age 17, then earns a PhD from Cambridge.", TotalPages = 352, PublishedYear = 2018 },
+            new() { ISBN = "9780735211292", Title = "Atomic Habits", Author = "James Clear", Genre = "Self-Help", Description = "An easy and proven way to build good habits and break bad ones.", TotalPages = 320, PublishedYear = 2018 },
+            new() { ISBN = "9780345391803", Title = "The Hitchhiker's Guide to the Galaxy", Author = "Douglas Adams", Genre = "Science Fiction", Description = "The hitchhiker's guide to everything — start with a bathrobe.", TotalPages = 193, PublishedYear = 1979 },
+            new() { ISBN = "9780140449334", Title = "Meditations", Author = "Marcus Aurelius", Genre = "Philosophy", Description = "Personal writings of the Roman Emperor — a cornerstone of Stoic philosophy.", TotalPages = 254, PublishedYear = 180 },
         };
 
         db.Books.AddRange(books);

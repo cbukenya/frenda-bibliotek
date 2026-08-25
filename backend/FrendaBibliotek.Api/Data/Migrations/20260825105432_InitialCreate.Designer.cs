@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FrendaBibliotek.Api.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825102228_InitialCreate")]
+    [Migration("20260825105432_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -50,6 +50,11 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("ISBN")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<int>("PublishedYear")
                         .HasColumnType("integer");
 
@@ -62,6 +67,9 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ISBN")
+                        .IsUnique();
 
                     b.ToTable("Books");
                 });

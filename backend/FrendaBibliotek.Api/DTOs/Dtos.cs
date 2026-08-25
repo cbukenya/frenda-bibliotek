@@ -4,6 +4,7 @@ namespace FrendaBibliotek.Api.DTOs;
 
 public record BookSummaryDto(
     int Id,
+    string ISBN,
     string Title,
     string Author,
     string Genre,
@@ -16,6 +17,7 @@ public record BookSummaryDto(
 
 public record BookDetailDto(
     int Id,
+    string ISBN,
     string Title,
     string Author,
     string Genre,
@@ -31,11 +33,13 @@ public record BookDetailDto(
 
 // ─── Loans ────────────────────────────────────────────────────────────────────
 
-public record BorrowRequest(int BookId);
+/// <summary>Borrow a book by its ISBN — unambiguous and human-readable.</summary>
+public record BorrowRequest(string ISBN);
 
 public record LoanDto(
     int Id,
     int BookId,
+    string ISBN,
     string BookTitle,
     string BookAuthor,
     string? CoverUrl,

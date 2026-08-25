@@ -9,9 +9,9 @@ namespace FrendaBibliotek.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IAppDbContext _db;
 
-    public BooksController(AppDbContext db) => _db = db;
+    public BooksController(IAppDbContext db) => _db = db;
 
     // GET /api/books
     [HttpGet]
@@ -37,8 +37,8 @@ public class BooksController : ControllerBase
                 ? completedLoans.Average(l => (l.ReturnedAt!.Value - l.BorrowedAt).TotalDays)
                 : null;
 
-            return new BookSummaryDto(b.Id, b.Title, b.Author, b.Genre, b.PublishedYear,
-                b.CoverUrl, totalCopies, availableCopies, avgDays);
+            return new BookSummaryDto(b.Id, b.ISBN, b.Title, b.Author, b.Genre,
+                b.PublishedYear, b.CoverUrl, totalCopies, availableCopies, avgDays);
         });
 
         return Ok(result);
@@ -57,7 +57,7 @@ public class BooksController : ControllerBase
             .OrderByDescending(x => x.LoanCount)
             .Take(10)
             .Select(x => new BookSummaryDto(
-                x.Book.Id, x.Book.Title, x.Book.Author, x.Book.Genre,
+                x.Book.Id, x.Book.ISBN, x.Book.Title, x.Book.Author, x.Book.Genre,
                 x.Book.PublishedYear, x.Book.CoverUrl,
                 x.Book.Copies.Count,
                 x.Book.Copies.Count - x.Book.Copies.SelectMany(c => c.Loans).Count(l => l.ReturnedAt == null),
@@ -92,8 +92,7 @@ public class BooksController : ControllerBase
             ? completedLoans.Average(l => (l.ReturnedAt!.Value - l.BorrowedAt).TotalDays)
             : null;
 
-        // Collaborative-filtering recommendations:
-        // Find users who borrowed this book, then find other books they also borrowed
+        // Collaborative-filtering recommendations
         var borrowerIds = await _db.Loans
             .Where(l => l.BookCopy.BookId == id)
             .Select(l => l.UserId)
@@ -116,7 +115,7 @@ public class BooksController : ControllerBase
             .OrderByDescending(x => x.SharedBorrowers)
             .Take(5)
             .Select(x => new BookSummaryDto(
-                x.Book.Id, x.Book.Title, x.Book.Author, x.Book.Genre,
+                x.Book.Id, x.Book.ISBN, x.Book.Title, x.Book.Author, x.Book.Genre,
                 x.Book.PublishedYear, x.Book.CoverUrl,
                 x.Book.Copies.Count,
                 x.Book.Copies.Count - x.Book.Copies.SelectMany(c => c.Loans).Count(l => l.ReturnedAt == null),
@@ -125,7 +124,7 @@ public class BooksController : ControllerBase
             .ToListAsync();
 
         var detail = new BookDetailDto(
-            book.Id, book.Title, book.Author, book.Genre, book.Description,
+            book.Id, book.ISBN, book.Title, book.Author, book.Genre, book.Description,
             book.PublishedYear, book.TotalPages, book.CoverUrl,
             totalCopies, availableCopies, avgDays, recommendations
         );

@@ -4,8 +4,8 @@ namespace FrendaBibliotek.Api.Services;
 
 public class BookNotAvailableException : Exception
 {
-    public BookNotAvailableException(int bookId)
-        : base($"No copies of book {bookId} are currently available.") { }
+    public BookNotAvailableException(string isbn)
+        : base($"No copies of '{isbn}' are currently available.") { }
 }
 
 public class LoanNotFoundException : Exception

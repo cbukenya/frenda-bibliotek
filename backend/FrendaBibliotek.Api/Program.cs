@@ -41,15 +41,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Database
+// In test environments WebApplicationFactory replaces the DbContext before any
+// connection is attempted, so a missing connection string is not fatal at registration time.
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? builder.Configuration["DATABASE_URL"]
-    ?? throw new InvalidOperationException("No connection string configured.");
+    ?? "Host=localhost;Database=bibliotek;Username=bibliotek_user;Password=change_me";
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(connectionString));
 
+// Register the interface so controllers and services can depend on IAppDbContext
+// rather than the concrete type, enabling unit testing without a real database.
+builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
 // Application services
-builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<UserContext>();
 
 // CORS — allow frontend dev server

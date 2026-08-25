@@ -54,14 +54,14 @@ public class LoansApiTests : IClassFixture<ApiFactory>
         _client.DefaultRequestHeaders.Remove("X-User-Id");
         _client.DefaultRequestHeaders.Add("X-User-Id", BobId.ToString());
 
-        // Book 3 (Thinking, Fast and Slow) — should have an available copy
-        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest(3));
+        // Book 3 (Thinking, Fast and Slow) — ISBN 9780374533557
+        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780374533557"));
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var loan = await response.Content.ReadFromJsonAsync<LoanDto>();
         loan.Should().NotBeNull();
-        loan!.BookId.Should().Be(3);
+        loan!.ISBN.Should().Be("9780374533557");
         loan.ReturnedAt.Should().BeNull();
     }
 
@@ -69,7 +69,7 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     public async Task BorrowBook_WithoutHeader_Returns400()
     {
         _client.DefaultRequestHeaders.Remove("X-User-Id");
-        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest(1));
+        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780465050659"));
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
