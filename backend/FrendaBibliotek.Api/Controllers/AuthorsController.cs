@@ -1,6 +1,5 @@
 using FrendaBibliotek.Api.Data;
 using FrendaBibliotek.Api.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +7,6 @@ namespace FrendaBibliotek.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class AuthorsController : ControllerBase
 {
     private readonly IAppDbContext _db;

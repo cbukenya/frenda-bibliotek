@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { isLoggedIn } from '@/lib/api';
 
 
 export default function NavBar() {
@@ -13,8 +14,17 @@ export default function NavBar() {
   const router = useRouter();
   const [langOpen, setLangOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+
+  // Check auth state on mount and when it changes
+  useEffect(() => {
+    setLoggedIn(isLoggedIn());
+    const handler = () => setLoggedIn(isLoggedIn());
+    window.addEventListener('frenda_user_changed', handler);
+    return () => window.removeEventListener('frenda_user_changed', handler);
+  }, []);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -121,35 +131,45 @@ export default function NavBar() {
               <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
             </button>
 
-            {/* User menu */}
-            <div className="relative" ref={userRef}>
-              <button
-                onClick={() => setUserOpen(v => !v)}
-                className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors"
+            {/* User area */}
+            {loggedIn ? (
+              <div className="relative" ref={userRef}>
+                <button
+                  onClick={() => setUserOpen(v => !v)}
+                  className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors"
+                >
+                  <span className="material-symbols-outlined">person</span>
+                </button>
+                {userOpen && (
+                  <div className="absolute right-0 mt-1 w-48 bg-surface-container-lowest rounded-lg shadow-lg border border-outline-variant/20 py-1 z-50">
+                    <Link
+                      href="/loans"
+                      onClick={() => setUserOpen(false)}
+                      className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">book_4</span>
+                      {t('myLoans')}
+                    </Link>
+                    <hr className="my-1 border-outline-variant/20" />
+                    <button
+                      onClick={() => { setUserOpen(false); import('@/lib/api').then(m => m.logout()); }}
+                      className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">logout</span>
+                      {t('logout')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
               >
-                <span className="material-symbols-outlined">person</span>
-              </button>
-              {userOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-surface-container-lowest rounded-lg shadow-lg border border-outline-variant/20 py-1 z-50">
-                  <Link
-                    href="/loans"
-                    onClick={() => setUserOpen(false)}
-                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">book_4</span>
-                    {t('myLoans')}
-                  </Link>
-                  <hr className="my-1 border-outline-variant/20" />
-                  <button
-                    onClick={() => { setUserOpen(false); import('@/lib/api').then(m => m.logout()); }}
-                    className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    {t('logout')}
-                  </button>
-                </div>
-              )}
-            </div>
+                <span className="material-symbols-outlined text-[18px]">login</span>
+                {t('login')}
+              </Link>
+            )}
           </div>
         </div>
       </header>
