@@ -45,7 +45,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Database.Migrate();
+            db.Database.EnsureCreated();
             DataSeeder.SeedAsync(db).GetAwaiter().GetResult();
         });
     }
