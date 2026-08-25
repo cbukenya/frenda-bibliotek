@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
-    branches: [main]
+    branches: ['**']
 
 jobs:
   backend:
@@ -19,18 +19,23 @@ jobs:
         with:
           dotnet-version: '7.0.x'
 
-      - name: Restore dependencies
+      - name: Restore
         run: dotnet restore backend/FrendaBibliotek.sln
 
       - name: Build
         run: dotnet build backend/FrendaBibliotek.sln --no-restore --configuration Release
 
-      - name: Run integration tests
-        run: dotnet test backend/FrendaBibliotek.sln --no-build --configuration Release --verbosity normal
-        # Docker is available on ubuntu-latest, so Testcontainers works out of the box
+      - name: Test
+        run: |
+          dotnet test backend/FrendaBibliotek.Tests/FrendaBibliotek.Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --logger "console;verbosity=normal" \
+            --blame-hang-timeout 120s
+        # Docker is available on ubuntu-latest so Testcontainers works out of the box
 
   migration-check:
-    name: Migration — enforce single migration per PR
+    name: Migration — single migration per PR
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
 
@@ -49,5 +54,5 @@ jobs:
         if: steps.count.outputs.count > 1
         run: |
           echo "This PR contains ${{ steps.count.outputs.count }} migrations."
-          echo "Please squash them into one by running ./reset-migrations.sh before merging."
+          echo "Run ./reset-migrations.sh to squash them before merging."
           exit 1

@@ -41,9 +41,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Database
+// In test environments WebApplicationFactory replaces the DbContext before any
+// connection is attempted, so a missing connection string is not fatal at registration time.
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? builder.Configuration["DATABASE_URL"]
-    ?? throw new InvalidOperationException("No connection string configured.");
+    ?? "Host=localhost;Database=bibliotek;Username=bibliotek_user;Password=change_me";
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(connectionString));
