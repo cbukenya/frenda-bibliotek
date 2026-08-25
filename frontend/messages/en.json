@@ -14,7 +14,9 @@
     "subtitle": "Explore our curated collection of technical and professional literature. Find resources to elevate your skills and knowledge.",
     "searchPlaceholder": "Search by title, author, genre, or ISBN…",
     "noResults": "No books found",
-    "noResultsHint": "Try a different search term."
+    "noResultsHint": "Try a different search term.",
+    "allBooks": "All books",
+    "filter": "Filter"
   },
   "bookCard": {
     "availableBadge": "● Available: {available} of {total}",

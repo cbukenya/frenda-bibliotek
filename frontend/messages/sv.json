@@ -14,7 +14,9 @@
     "subtitle": "Utforska vår samlade kollektion av teknisk och professionell litteratur. Hitta resurser för att höja dina kunskaper.",
     "searchPlaceholder": "Sök på titel, författare, genre eller ISBN…",
     "noResults": "Inga böcker hittades",
-    "noResultsHint": "Försök med ett annat sökord."
+    "noResultsHint": "Försök med ett annat sökord.",
+    "allBooks": "Alla böcker",
+    "filter": "Filter"
   },
   "bookCard": {
     "availableBadge": "● Tillgänglig: {available} av {total}",

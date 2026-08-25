@@ -41,16 +41,13 @@ export default function BrowsePage() {
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">{t('subtitle')}</p>
         </header>
 
-        {/* Search bar */}
-        <div className="relative mb-10 max-w-lg">
-          <input
-            type="search"
-            placeholder={t('searchPlaceholder')}
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            className="w-full bg-[#F1F3F5] border-none rounded-full py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:bg-white transition-all outline-none"
-          />
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">search</span>
+        {/* Subtitle + filter */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface">{t('allBooks')}</h2>
+          <button className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">
+            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+            {t('filter')}
+          </button>
         </div>
 
         {/* Book grid */}
