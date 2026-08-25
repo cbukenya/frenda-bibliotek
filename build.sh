@@ -81,4 +81,3 @@ echo -e "  ${CYAN}Credentials from .env. Connect with psql or any DB client.${RE
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 echo ""
-success "Bootstrap complete. Happy coding!"
