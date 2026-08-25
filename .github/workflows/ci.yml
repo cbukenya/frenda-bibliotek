@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend — build & integration tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 7
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore backend/FrendaBibliotek.sln
+
+      - name: Build
+        run: dotnet build backend/FrendaBibliotek.sln --no-restore --configuration Release
+
+      - name: Run integration tests
+        run: dotnet test backend/FrendaBibliotek.sln --no-build --configuration Release --verbosity normal
+        # Docker is available on ubuntu-latest, so Testcontainers works out of the box
+
+  migration-check:
+    name: Migration — enforce single migration per PR
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Count migrations
+        id: count
+        run: |
+          COUNT=$(find backend/FrendaBibliotek.Api/Data/Migrations \
+            -maxdepth 1 -name "*_*.cs" ! -name "*.Designer.cs" | wc -l | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Migration count: $COUNT"
+
+      - name: Fail if more than one migration
+        if: steps.count.outputs.count > 1
+        run: |
+          echo "This PR contains ${{ steps.count.outputs.count }} migrations."
+          echo "Please squash them into one by running ./reset-migrations.sh before merging."
+          exit 1
