@@ -32,8 +32,8 @@ fi
 
 # ─── Build & start containers ─────────────────────────────────────────────────
 
-info "Building Docker images..."
-docker compose build
+info "Building Docker images (no cache)..."
+docker compose build --no-cache
 
 info "Starting services (detached)..."
 docker compose up -d
@@ -43,7 +43,7 @@ docker compose up -d
 info "Waiting for API to become ready..."
 MAX_WAIT=60
 ELAPSED=0
-until curl -sf http://localhost:5000/swagger/v1/swagger.json >/dev/null 2>&1; do
+until curl -sf http://localhost:5001/swagger/v1/swagger.json >/dev/null 2>&1; do
   if [ "$ELAPSED" -ge "$MAX_WAIT" ]; then
     error "API did not become ready within ${MAX_WAIT}s. Check: docker compose logs api"
   fi
@@ -69,14 +69,14 @@ echo -e "  ${BOLD}Frontend${RESET}       http://localhost:3000"
 echo -e "  ${CYAN}The main app. Use the user switcher in the header to"
 echo -e "  select a borrower, then browse books, borrow, and return.${RESET}"
 echo ""
-echo -e "  ${BOLD}API (Swagger)${RESET}  http://localhost:5000/swagger"
+echo -e "  ${BOLD}API (Swagger)${RESET}  http://localhost:5001/swagger"
 echo -e "  ${CYAN}Interactive API docs. Set X-User-Id in the Authorize"
 echo -e "  dialog to identify your borrower (e.g. 1 = Alice).${RESET}"
 echo ""
-echo -e "  ${BOLD}API (Base URL)${RESET} http://localhost:5000/api"
+echo -e "  ${BOLD}API (Base URL)${RESET} http://localhost:5001/api"
 echo -e "  ${CYAN}REST endpoints: /books, /books/top, /loans, /users${RESET}"
 echo ""
-echo -e "  ${BOLD}PostgreSQL${RESET}     localhost:5432  db=bibliotek${RESET}"
+echo -e "  ${BOLD}PostgreSQL${RESET}     localhost:5433  db=bibliotek${RESET}"
 echo -e "  ${CYAN}Credentials from .env. Connect with psql or any DB client.${RESET}"
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
