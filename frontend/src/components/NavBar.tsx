@@ -30,7 +30,9 @@ export default function NavBar() {
 
   const switchLocale = (next: string) => {
     const stripped = pathname.replace(/^\/(en|sv)/, '') || '/';
-    router.push(next === 'en' ? stripped : `/${next}${stripped}`);
+    const target = next === 'en' ? stripped : `/${next}${stripped}`;
+    // Full navigation ensures the middleware runs and sets the locale cookie
+    window.location.href = target;
   };
 
   return (
@@ -102,7 +104,7 @@ export default function NavBar() {
                       onClick={() => { switchLocale(code); setLangOpen(false); }}
                       className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                         locale === code
-                          ? 'bg-primary-container text-primary font-bold'
+                          ? 'bg-surface-container-high text-primary font-bold'
                           : 'text-on-surface hover:bg-surface-container-low'
                       }`}
                     >
