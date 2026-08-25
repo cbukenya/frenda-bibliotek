@@ -5,6 +5,10 @@ obj/
 *.suo
 .vs/
 
+# Agent config (contains API keys — never commit)
+.agents/mcp_config.json
+
+
 # Node
 node_modules/
 .next/
