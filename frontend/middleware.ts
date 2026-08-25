@@ -8,6 +8,6 @@ export default createMiddleware({
 });
 
 export const config = {
-  // Run on all routes except API, static files, and Next.js internals
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  // Exclude _next internals, static files, and /api/ proxy routes
+  matcher: ['/((?!_next|api|.*\\..*).*)'],
 };

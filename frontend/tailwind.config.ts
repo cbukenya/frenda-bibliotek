@@ -5,9 +5,54 @@ const config: Config = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    // Explicitly include dynamic-segment dirs (fast-glob treats [] as char classes)
     './src/app/\\[locale\\]/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/\\[locale\\]/books/\\[id\\]/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  // Force-include custom classes that live inside [locale] dynamic segments
+  // (fast-glob bracket handling varies across platforms)
+  safelist: [
+    // --- Typography: font family ---
+    'font-headline-xl','font-headline-lg','font-headline-lg-mobile',
+    'font-headline-md','font-headline-sm',
+    'font-body-lg','font-body-md','font-body-sm',
+    'font-label-md','font-label-sm',
+    // --- Typography: font size ---
+    'text-headline-xl','text-headline-lg','text-headline-lg-mobile',
+    'text-headline-md','text-headline-sm',
+    'text-body-lg','text-body-md','text-body-sm',
+    'text-label-md','text-label-sm',
+    // Responsive typography
+    'md:font-headline-xl','md:font-headline-lg-mobile',
+    'md:text-headline-xl','md:text-headline-lg-mobile',
+    'md:hidden','md:block',
+    // --- Spacing ---
+    'px-margin-mobile','px-margin-desktop','md:px-margin-desktop',
+    'p-gutter','px-gutter','py-gutter','gap-gutter',
+    'max-w-container-max',
+    'pt-24','pb-24','pb-20','pt-8','pb-8',
+    // --- Text colours ---
+    'text-primary','text-on-primary','text-on-primary-container',
+    'text-on-surface','text-on-surface-variant','text-on-background',
+    'text-on-secondary-container','text-outline',
+    'text-status-available','text-status-borrowed',
+    'text-error','text-text-main',
+    // --- Background colours ---
+    'bg-primary','bg-primary-container',
+    'bg-surface','bg-background',
+    'bg-surface-container','bg-surface-container-low',
+    'bg-surface-container-high','bg-surface-container-lowest',
+    'bg-surface-container-highest','bg-secondary-container',
+    // --- Border colours ---
+    'border-primary','border-secondary-container',
+    'border-outline-variant',
+    { pattern: /^bg-(status-available|error)\/\d+$/ },
+    { pattern: /^text-(status-available|error)\/\d+$/ },
+    // --- Grid ---
+    'md:grid-cols-12','md:grid-cols-2','md:grid-cols-4',
+    'lg:grid-cols-3','lg:grid-cols-4',
+    'md:col-span-4','md:col-span-8','lg:col-span-3','lg:col-span-9',
+    // --- Display / layout ---
+    'md:pb-8',
   ],
   darkMode: 'class',
   theme: {
