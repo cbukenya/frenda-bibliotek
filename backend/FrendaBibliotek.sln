@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrendaBibliotek.Api", "FrendaBibliotek.Api\FrendaBibliotek.Api.csproj", "{A01FB24C-D87B-44A1-84D2-3440F5CE6706}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrendaBibliotek.Tests", "FrendaBibliotek.Tests\FrendaBibliotek.Tests.csproj", "{42F08EE2-AA74-498C-8C00-9C0E36CB9E57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A01FB24C-D87B-44A1-84D2-3440F5CE6706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A01FB24C-D87B-44A1-84D2-3440F5CE6706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A01FB24C-D87B-44A1-84D2-3440F5CE6706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A01FB24C-D87B-44A1-84D2-3440F5CE6706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F08EE2-AA74-498C-8C00-9C0E36CB9E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F08EE2-AA74-498C-8C00-9C0E36CB9E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F08EE2-AA74-498C-8C00-9C0E36CB9E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F08EE2-AA74-498C-8C00-9C0E36CB9E57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
