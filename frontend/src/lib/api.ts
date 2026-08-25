@@ -112,9 +112,9 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     headers,
   });
 
-  // If unauthorized, redirect to login
+  // If unauthorized and user had a token (expired), clear and redirect
   if (res.status === 401) {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && token) {
       logout();
     }
     throw new Error('Unauthorized');

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { getTopBooks, getBooks, getMyLoans, type Book } from '@/lib/api';
+import { getTopBooks, getBooks, getMyLoans, isLoggedIn, type Book } from '@/lib/api';
 import BookCard from '@/components/BookCard';
 import TopListRow from '@/components/TopListRow';
 
@@ -24,18 +24,23 @@ export default function DiscoverPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [allBooks, top, loans] = await Promise.all([
+      const [allBooks, top] = await Promise.all([
         getBooks(),
         getTopBooks(),
-        getMyLoans(),
       ]);
       setTopBooks(top);
 
-      // Simple recommendation: all books not currently loaned by user, shuffled, take 4
-      const loanedBookIds = new Set(
-        loans.filter(l => !l.returnedAt).map(l => l.bookId)
-      );
-      const notLoaned = allBooks.filter(b => !loanedBookIds.has(b.id));
+      // If logged in, filter out books the user already has
+      let notLoaned = allBooks;
+      if (isLoggedIn()) {
+        try {
+          const loans = await getMyLoans();
+          const loanedBookIds = new Set(
+            loans.filter(l => !l.returnedAt).map(l => l.bookId)
+          );
+          notLoaned = allBooks.filter(b => !loanedBookIds.has(b.id));
+        } catch { /* ignore auth errors */ }
+      }
       setRecommendations(shuffle(notLoaned).slice(0, 3));
     } finally {
       setLoading(false);

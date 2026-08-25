@@ -122,13 +122,6 @@ export default function BookDetailPage() {
                 <span className="material-symbols-outlined">library_add</span>
                 {t('borrowBook')}
               </button>
-              <Link
-                href="/loans"
-                className="border-2 border-outline-variant text-on-surface-variant hover:bg-surface-container-low hover:text-primary hover:border-primary font-label-md text-label-md px-6 py-3 rounded-lg transition-all flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined">favorite_border</span>
-                {t('myLoans')}
-              </Link>
             </div>
 
             {/* Metadata grid */}
