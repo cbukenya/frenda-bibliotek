@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getBooks, getGenreAncestors, type Book, type Genre } from '@/lib/api';
 import BookCard from '@/components/BookCard';
-import GenreFilterPanel from '@/components/GenreFilterModal';
+import GenreFilterPanel, { type FilterSelection } from '@/components/GenreFilterModal';
 
 export default function BrowsePage() {
   const t = useTranslations('browse');
@@ -14,28 +14,31 @@ export default function BrowsePage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
 
-  // Genre filter state
+  // Filter state
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
+  const [filters, setFilters] = useState<FilterSelection>({ genre: null, author: null });
   const [breadcrumb, setBreadcrumb] = useState<Genre[]>([]);
 
   const load = useCallback(() => {
     setLoading(true);
-    getBooks(selectedGenre ? { genreId: selectedGenre.id } : undefined)
+    const params: { genreId?: number; authorId?: number } = {};
+    if (filters.genre) params.genreId = filters.genre.id;
+    if (filters.author) params.authorId = filters.author.id;
+    getBooks(Object.keys(params).length > 0 ? params : undefined)
       .then(setBooks)
       .finally(() => setLoading(false));
-  }, [selectedGenre]);
+  }, [filters]);
 
   useEffect(() => { load(); }, [load]);
 
   // Load breadcrumb ancestors when genre changes
   useEffect(() => {
-    if (selectedGenre) {
-      getGenreAncestors(selectedGenre.id).then(setBreadcrumb).catch(() => []);
+    if (filters.genre) {
+      getGenreAncestors(filters.genre.id).then(setBreadcrumb).catch(() => []);
     } else {
       setBreadcrumb([]);
     }
-  }, [selectedGenre]);
+  }, [filters.genre]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -48,10 +51,12 @@ export default function BrowsePage() {
     );
   }, [books, query]);
 
-  const handleGenreSelect = (genre: Genre | null) => {
-    setSelectedGenre(genre);
+  const handleFilterSelect = (newFilters: FilterSelection) => {
+    setFilters(newFilters);
     setFilterOpen(false);
   };
+
+  const hasActiveFilter = filters.genre !== null || filters.author !== null;
 
   return (
     <div className="pt-24 pb-24 md:pb-8">
@@ -68,18 +73,18 @@ export default function BrowsePage() {
           <div className="flex items-center gap-1.5 flex-wrap">
             {/* "Alla böcker" — clickable subtitle that resets filter */}
             <button
-              onClick={() => { setSelectedGenre(null); setFilterOpen(false); }}
+              onClick={() => { setFilters({ genre: null, author: null }); setFilterOpen(false); }}
               className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors"
             >
               {t('allBooks')}
             </button>
 
-            {/* Breadcrumb trail — smaller clickable text */}
+            {/* Genre breadcrumbs */}
             {breadcrumb.map((g, i) => (
               <span key={g.id} className="flex items-center gap-1.5">
                 <span className="text-outline text-sm">/</span>
                 <button
-                  onClick={() => setSelectedGenre(g)}
+                  onClick={() => setFilters(f => ({ ...f, genre: g }))}
                   className={`text-sm hover:text-primary transition-colors ${
                     i === breadcrumb.length - 1
                       ? 'text-primary font-semibold'
@@ -90,13 +95,29 @@ export default function BrowsePage() {
                 </button>
               </span>
             ))}
+
+            {/* Author chip */}
+            {filters.author && (
+              <span className="flex items-center gap-1.5">
+                {breadcrumb.length > 0 && <span className="text-outline text-sm">·</span>}
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                  {filters.author.name}
+                  <button
+                    onClick={() => setFilters(f => ({ ...f, author: null }))}
+                    className="hover:text-on-surface transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </span>
+              </span>
+            )}
           </div>
 
           {/* Filter toggle */}
           <button
             onClick={() => setFilterOpen(v => !v)}
             className={`flex items-center gap-1.5 font-label-md text-label-md transition-colors ${
-              filterOpen ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+              filterOpen || hasActiveFilter ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
@@ -104,10 +125,11 @@ export default function BrowsePage() {
           </button>
         </div>
 
-        {/* Inline genre filter panel */}
+        {/* Inline filter panel */}
         <GenreFilterPanel
           open={filterOpen}
-          onSelect={handleGenreSelect}
+          activeFilters={filters}
+          onSelect={handleFilterSelect}
         />
 
         {/* Spacing when filter is closed */}

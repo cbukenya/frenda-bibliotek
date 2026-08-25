@@ -18,6 +18,8 @@
     "allBooks": "Alla böcker",
     "filter": "Filter",
     "filterByGenre": "Filtrera efter genre",
+    "filterByAuthor": "Filtrera efter författare",
+    "searchAuthor": "Sök författare…",
     "clearFilter": "Rensa filter",
     "applyFilter": "Tillämpa"
   },

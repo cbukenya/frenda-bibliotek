@@ -18,6 +18,8 @@
     "allBooks": "All books",
     "filter": "Filter",
     "filterByGenre": "Filter by genre",
+    "filterByAuthor": "Filter by author",
+    "searchAuthor": "Search author…",
     "clearFilter": "Clear filter",
     "applyFilter": "Apply"
   },
