@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { getGenreTree, type Genre, genreEmoji } from '@/lib/api';
+import { getGenreTree, type Genre } from '@/lib/api';
 
 interface Props {
   open: boolean;
@@ -74,9 +74,8 @@ export default function GenreFilterPanel({ open, onSelect }: Props) {
           <button
             key={genre.id}
             onClick={() => drillDown(genre)}
-            className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-surface-container-low transition-colors text-left"
+            className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-surface-container-low transition-colors text-left"
           >
-            <span className="text-base">{genreEmoji(genre.name)}</span>
             <span className="font-body-md text-sm text-on-surface truncate">{genre.name}</span>
             {genre.children && genre.children.length > 0 && (
               <span className="material-symbols-outlined text-on-surface-variant text-[14px] ml-auto flex-shrink-0">chevron_right</span>
