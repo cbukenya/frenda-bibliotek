@@ -10,7 +10,7 @@ RUN dotnet restore FrendaBibliotek.Api/FrendaBibliotek.Api.csproj
 # Copy source and publish
 COPY FrendaBibliotek.Api/ FrendaBibliotek.Api/
 RUN dotnet publish FrendaBibliotek.Api/FrendaBibliotek.Api.csproj \
-    -c Release -o /app/publish --no-restore
+    -c Release -o /app/publish
 
 # ─── Runtime stage ────────────────────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
