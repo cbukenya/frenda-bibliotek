@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { type Book, genreEmoji } from '@/lib/api';
 
 interface Props {
@@ -14,6 +15,7 @@ const rankClass = (rank: number) => {
 };
 
 export default function TopListRow({ book, rank }: Props) {
+  const t = useTranslations('topList');
   const totalLoans = book.totalCopies - book.availableCopies;
 
   return (
@@ -33,10 +35,10 @@ export default function TopListRow({ book, rank }: Props) {
         <div className="top-list-author">{book.author}</div>
         <div className="top-list-stat">
           <span className="stat-pill stat-pill--borrowed">
-            {totalLoans} borrowed
+            {t('borrowed', { count: totalLoans })}
           </span>
           {book.availableCopies > 0 && (
-            <span className="stat-pill stat-pill--available">Available</span>
+            <span className="stat-pill stat-pill--available">{t('available')}</span>
           )}
         </div>
       </div>

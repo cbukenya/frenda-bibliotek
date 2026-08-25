@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { getCurrentUserId, setCurrentUserId, getUsers, type User } from '@/lib/api';
 
 export default function UserSwitcher() {
+  const t = useTranslations('dev');
   const [users, setUsers] = useState<User[]>([]);
   const [currentId, setCurrentId] = useState(getCurrentUserId());
 
@@ -18,12 +20,11 @@ export default function UserSwitcher() {
   };
 
   if (users.length === 0) return null;
-
   const current = users.find(u => u.id === currentId);
 
   return (
     <div className="dev-footer">
-      <span>🛠 Dev — browsing as:</span>
+      <span>{t('label')}</span>
       <select value={currentId} onChange={handleChange}>
         {users.map(u => (
           <option key={u.id} value={u.id}>{u.name} ({u.email})</option>

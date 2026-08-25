@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "logo": "Frenda Bibliotek",
+    "browse": "Bläddra",
+    "myLoans": "Mina Lån",
+    "discover": "Upptäck",
+    "searchPlaceholder": "Sök i biblioteket...",
+    "notifications": "Aviseringar"
+  },
+  "browse": {
+    "title": "Biblioteksöversikt",
+    "subtitle": "Utforska vår samlade kollektion av teknisk och professionell litteratur. Hitta resurser för att höja dina kunskaper.",
+    "searchPlaceholder": "Sök på titel, författare, genre eller ISBN…",
+    "noResults": "Inga böcker hittades",
+    "noResultsHint": "Försök med ett annat sökord."
+  },
+  "bookCard": {
+    "availableBadge": "● Tillgänglig: {available} av {total}",
+    "allOutBadge": "● Alla utlånade",
+    "borrow": "Låna",
+    "borrowing": "Lånar…",
+    "borrowed": "Lånad ✓",
+    "readingTime": "Ca. {time}",
+    "avgLoan": "medel {days}d lån",
+    "communityData": "communitydata"
+  },
+  "bookDetail": {
+    "back": "Tillbaka till sökresultat",
+    "borrowBook": "Låna boken",
+    "borrowing": "Lånar…",
+    "borrowed": "Lånad ✓",
+    "myLoans": "Mina Lån",
+    "copies": "{available} av {total}",
+    "allOut": "Alla utlånade",
+    "isbn": "ISBN",
+    "genre": "Genre",
+    "pages": "Sidor",
+    "year": "År",
+    "avgLoan": "Medellån: {days} dagar · Ca. {time}",
+    "recommendationsTitle": "Andra som lånade den här boken lånade också…"
+  },
+  "loans": {
+    "title": "Mina Lån",
+    "subtitle": "Hantera din nuvarande läsning och se din historik.",
+    "activeLoans": "Aktiva Lån",
+    "bookCount": "{count, plural, one {# bok} other {# böcker}}",
+    "noActiveTitle": "Inga aktiva lån",
+    "noActiveHint": "Gå till Bläddra för att låna en bok.",
+    "browseLink": "Bläddra",
+    "history": "Lånehistorik",
+    "historyCount": "{count} böcker",
+    "colBookTitle": "Boktitel",
+    "colAuthor": "Författare",
+    "colBorrowed": "Lånad",
+    "colReturned": "Återlämnad",
+    "colStatus": "Status",
+    "statusOnTime": "Återlämnad i tid",
+    "statusLate": "Återlämnad för sent"
+  },
+  "loanCard": {
+    "borrowedLabel": "Lånad:",
+    "dueDateLabel": "Förfallodatum:",
+    "returnBook": "↩ Återlämna bok",
+    "returning": "Återlämnar…",
+    "dueIn": "Om {days}d",
+    "overdue": "{days}d försenad"
+  },
+  "discover": {
+    "title": "Upptäck nya världar",
+    "subtitle": "Utforska kurerade rekommendationer och topplistor handplockade för din läsresa.",
+    "recommended": "Rekommenderat för dig",
+    "because": "Eftersom du lånade \"{title}\"",
+    "topList": "Topplista: Mest lånade denna månad",
+    "borrowed": "{count} lånade",
+    "available": "Tillgänglig"
+  },
+  "topList": {
+    "borrowed": "{count} lånade",
+    "available": "Tillgänglig"
+  },
+  "dev": {
+    "label": "🛠 Dev — bläddrar som:"
+  },
+  "common": {
+    "english": "EN",
+    "swedish": "SV",
+    "langLabel": "Språk"
+  }
+}

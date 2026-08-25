@@ -1,23 +1,6 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import NavBar from '@/components/NavBar';
-import UserSwitcher from '@/components/UserSwitcher';
-
-export const metadata: Metadata = {
-  title: { default: 'Frenda Bibliotek', template: '%s | Frenda Bibliotek' },
-  description: 'A curated library of technical and professional literature. Browse, borrow, and discover your next great read.',
-};
-
+// Minimal root layout required by Next.js App Router.
+// The real layout (with NavBar, locale provider, etc.) lives in app/[locale]/layout.tsx.
+// The middleware redirects all requests to the appropriate locale segment.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>
-        <NavBar />
-        <main className="page">
-          {children}
-        </main>
-        <UserSwitcher />
-      </body>
-    </html>
-  );
+  return children;
 }

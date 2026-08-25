@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "logo": "Frenda Bibliotek",
+    "browse": "Browse",
+    "myLoans": "My Loans",
+    "discover": "Discover",
+    "searchPlaceholder": "Search library...",
+    "notifications": "Notifications"
+  },
+  "browse": {
+    "title": "Library Overview",
+    "subtitle": "Explore our curated collection of technical and professional literature. Find resources to elevate your skills and knowledge.",
+    "searchPlaceholder": "Search by title, author, genre, or ISBN…",
+    "noResults": "No books found",
+    "noResultsHint": "Try a different search term."
+  },
+  "bookCard": {
+    "availableBadge": "● Available: {available} of {total}",
+    "allOutBadge": "● All Out",
+    "borrow": "Borrow",
+    "borrowing": "Borrowing…",
+    "borrowed": "Borrowed ✓",
+    "readingTime": "Est. {time}",
+    "avgLoan": "avg {days}d loan",
+    "communityData": "community data"
+  },
+  "bookDetail": {
+    "back": "Back to results",
+    "borrowBook": "Borrow Book",
+    "borrowing": "Borrowing…",
+    "borrowed": "Borrowed ✓",
+    "myLoans": "My Loans",
+    "copies": "{available} of {total}",
+    "allOut": "All Out",
+    "isbn": "ISBN",
+    "genre": "Genre",
+    "pages": "Pages",
+    "year": "Year",
+    "avgLoan": "Avg loan: {days} days · Est. {time}",
+    "recommendationsTitle": "Others who borrowed this also borrowed…"
+  },
+  "loans": {
+    "title": "My Loans",
+    "subtitle": "Manage your current reading and view your history.",
+    "activeLoans": "Active Loans",
+    "bookCount": "{count, plural, one {# book} other {# books}}",
+    "noActiveTitle": "No active loans",
+    "noActiveHint": "Head to Browse to borrow a book.",
+    "browseLink": "Browse",
+    "history": "Lending History",
+    "historyCount": "{count} books",
+    "colBookTitle": "Book Title",
+    "colAuthor": "Author",
+    "colBorrowed": "Borrowed",
+    "colReturned": "Returned",
+    "colStatus": "Status",
+    "statusOnTime": "Returned On Time",
+    "statusLate": "Returned Late"
+  },
+  "loanCard": {
+    "borrowedLabel": "Borrowed:",
+    "dueDateLabel": "Due Date:",
+    "returnBook": "↩ Return Book",
+    "returning": "Returning…",
+    "dueIn": "Due in {days}d",
+    "overdue": "{days}d overdue"
+  },
+  "discover": {
+    "title": "Discover New Worlds",
+    "subtitle": "Explore curated recommendations and top trending titles handpicked for your reading journey.",
+    "recommended": "Recommended for You",
+    "because": "Because you borrowed \"{title}\"",
+    "topList": "Top List: Most Borrowed This Month",
+    "borrowed": "{count} borrowed",
+    "available": "Available"
+  },
+  "topList": {
+    "borrowed": "{count} borrowed",
+    "available": "Available"
+  },
+  "dev": {
+    "label": "🛠 Dev — browsing as:"
+  },
+  "common": {
+    "english": "EN",
+    "swedish": "SV",
+    "langLabel": "Language"
+  }
+}

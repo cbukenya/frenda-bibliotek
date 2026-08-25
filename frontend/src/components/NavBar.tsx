@@ -1,19 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { getCurrentUserId, getUser, type User } from '@/lib/api';
 
 export default function NavBar() {
+  const t = useTranslations('nav');
+  const tc = useTranslations('common');
+  const locale = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
     const load = () => {
-      const id = getCurrentUserId();
-      getUser(id).then(setUser).catch(() => null);
+      getUser(getCurrentUserId()).then(setUser).catch(() => null);
     };
     load();
     window.addEventListener('frenda_user_changed', load);
@@ -25,22 +29,26 @@ export default function NavBar() {
     : '?';
 
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+    href === '/' ? pathname === '/' || pathname === '/sv' : pathname.includes(href);
+
+  const switchLocale = (next: string) => {
+    // Strip current locale prefix if present, then prepend new one
+    const stripped = pathname.replace(/^\/(en|sv)/, '') || '/';
+    router.push(next === 'en' ? stripped : `/${next}${stripped}`);
+  };
 
   return (
     <nav className="nav">
-      <Link href="/" className="nav-logo">Frenda Bibliotek</Link>
+      <Link href="/" className="nav-logo">{t('logo')}</Link>
 
       <ul className="nav-links">
-        {[
-          { href: '/',         label: 'Browse' },
-          { href: '/loans',    label: 'My Loans' },
-          { href: '/discover', label: 'Discover' },
-        ].map(({ href, label }) => (
+        {([
+          { href: '/',         label: t('browse') },
+          { href: '/loans',    label: t('myLoans') },
+          { href: '/discover', label: t('discover') },
+        ] as const).map(({ href, label }) => (
           <li key={href}>
-            <Link href={href} className={isActive(href) ? 'active' : ''}>
-              {label}
-            </Link>
+            <Link href={href} className={isActive(href) ? 'active' : ''}>{label}</Link>
           </li>
         ))}
       </ul>
@@ -51,19 +59,42 @@ export default function NavBar() {
         </svg>
         <input
           type="search"
-          placeholder="Search library..."
+          placeholder={t('searchPlaceholder')}
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter' && query.trim()) {
-              window.location.href = `/?q=${encodeURIComponent(query.trim())}`;
+              router.push(`/?q=${encodeURIComponent(query.trim())}`);
             }
           }}
         />
       </div>
 
       <div className="nav-right">
-        <button className="nav-icon-btn" aria-label="Notifications">
+        {/* Language switcher */}
+        <div style={{ display: 'flex', gap: '.25rem' }}>
+          {(['en', 'sv'] as const).map(lang => (
+            <button
+              key={lang}
+              onClick={() => switchLocale(lang)}
+              className="nav-icon-btn"
+              style={{
+                fontSize: '.7rem',
+                fontWeight: 700,
+                width: 'auto',
+                padding: '0 .5rem',
+                borderRadius: 4,
+                background: locale === lang ? 'var(--navy)' : undefined,
+                color: locale === lang ? '#fff' : undefined,
+              }}
+              aria-label={tc(lang === 'en' ? 'english' : 'swedish')}
+            >
+              {tc(lang === 'en' ? 'english' : 'swedish')}
+            </button>
+          ))}
+        </div>
+
+        <button className="nav-icon-btn" aria-label={t('notifications')}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>

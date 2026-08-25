@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { type Book, borrowBook, estReadingHours, genreEmoji } from '@/lib/api';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function BookCard({ book, onBorrowed }: Props) {
+  const t = useTranslations('bookCard');
   const [loading, setLoading] = useState(false);
   const [borrowed, setBorrowed] = useState(false);
   const available = book.availableCopies > 0;
@@ -36,12 +38,12 @@ export default function BookCard({ book, onBorrowed }: Props) {
         {book.coverUrl ? (
           <img src={book.coverUrl} alt={book.title} />
         ) : (
-          <div className="book-card__cover-placeholder">
-            {genreEmoji(book.genre)}
-          </div>
+          <div className="book-card__cover-placeholder">{genreEmoji(book.genre)}</div>
         )}
         <span className={`book-card__badge ${available ? 'badge--available' : 'badge--unavailable'}`}>
-          {available ? `● Available: ${book.availableCopies} of ${book.totalCopies}` : '● All Out'}
+          {available
+            ? t('availableBadge', { available: book.availableCopies, total: book.totalCopies })
+            : t('allOutBadge')}
         </span>
       </div>
 
@@ -52,14 +54,18 @@ export default function BookCard({ book, onBorrowed }: Props) {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
-          Est. {estReadingHours(book.totalPages)} · {book.avgReadingDays ? `avg ${Math.round(book.avgReadingDays)}d loan` : 'community data'}
+          {t('readingTime', { time: estReadingHours(book.totalPages) })}
+          {' · '}
+          {book.avgReadingDays
+            ? t('avgLoan', { days: Math.round(book.avgReadingDays) })
+            : t('communityData')}
         </div>
         <button
           className="btn btn--primary btn--sm"
           onClick={handleBorrow}
           disabled={!available || loading || borrowed}
         >
-          {loading ? 'Borrowing…' : borrowed ? 'Borrowed ✓' : 'Borrow'}
+          {loading ? t('borrowing') : borrowed ? t('borrowed') : t('borrow')}
         </button>
       </div>
     </Link>

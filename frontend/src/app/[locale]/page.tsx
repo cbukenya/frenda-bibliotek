@@ -2,10 +2,12 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { getBooks, type Book } from '@/lib/api';
 import BookCard from '@/components/BookCard';
 
 function BrowseContent() {
+  const t = useTranslations('browse');
   const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,10 +34,8 @@ function BrowseContent() {
   return (
     <div className="container">
       <div className="page-header">
-        <h1 className="page-title">Library Overview</h1>
-        <p className="page-subtitle">
-          Explore our curated collection of technical and professional literature. Find resources to elevate your skills and knowledge.
-        </p>
+        <h1 className="page-title">{t('title')}</h1>
+        <p className="page-subtitle">{t('subtitle')}</p>
       </div>
 
       <div className="search-bar">
@@ -44,7 +44,7 @@ function BrowseContent() {
         </svg>
         <input
           type="search"
-          placeholder="Search by title, author, genre, or ISBN…"
+          placeholder={t('searchPlaceholder')}
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
@@ -66,8 +66,8 @@ function BrowseContent() {
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state__icon">📭</div>
-          <div className="empty-state__title">No books found</div>
-          <p>Try a different search term.</p>
+          <div className="empty-state__title">{t('noResults')}</div>
+          <p>{t('noResultsHint')}</p>
         </div>
       ) : (
         <div className="book-grid">
