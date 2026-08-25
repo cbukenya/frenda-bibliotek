@@ -51,9 +51,8 @@ export function setCurrentUserId(id: number): void {
   window.dispatchEvent(new Event('frenda_user_changed'));
 }
 
-// ─── Fetch helper ─────────────────────────────────────────────────────────────
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5050';
+// Client-side fetches use relative URLs → Next.js rewrite proxy forwards to the API container.
+const API_BASE = '';
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const userId = getCurrentUserId();
