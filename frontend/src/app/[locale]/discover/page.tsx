@@ -36,7 +36,7 @@ export default function DiscoverPage() {
         loans.filter(l => !l.returnedAt).map(l => l.bookId)
       );
       const notLoaned = allBooks.filter(b => !loanedBookIds.has(b.id));
-      setRecommendations(shuffle(notLoaned).slice(0, 4));
+      setRecommendations(shuffle(notLoaned).slice(0, 3));
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ export default function DiscoverPage() {
 
           {loading ? (
             <div className="bento-grid">
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm animate-pulse">
                   <div className="h-64 bg-surface-container-high" />
                   <div className="p-gutter space-y-3">
