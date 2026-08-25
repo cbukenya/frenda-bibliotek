@@ -8,5 +8,11 @@ public enum UserType
 
 public class User
 {
-    // TODO: add fields — Id, Name, Email, UserType
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public UserType UserType { get; set; } = UserType.LibraryUser;
+
+    // Navigation
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 }

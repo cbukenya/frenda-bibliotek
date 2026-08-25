@@ -1,4 +1,7 @@
 using FrendaBibliotek.Api.Data;
+using FrendaBibliotek.Api.DTOs;
+using FrendaBibliotek.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FrendaBibliotek.Api.Services;
 
@@ -8,5 +11,73 @@ public class LoanService : ILoanService
 
     public LoanService(AppDbContext db) => _db = db;
 
-    // TODO: implement GetMyLoans, BorrowBook, ReturnLoan
+    public async Task<IEnumerable<LoanDto>> GetMyLoansAsync(int userId)
+    {
+        return await _db.Loans
+            .Where(l => l.UserId == userId)
+            .Include(l => l.BookCopy)
+                .ThenInclude(c => c.Book)
+            .OrderByDescending(l => l.BorrowedAt)
+            .Select(l => ToDto(l))
+            .ToListAsync();
+    }
+
+    public async Task<LoanDto> BorrowBookAsync(int userId, int bookId)
+    {
+        await using var tx = await _db.Database.BeginTransactionAsync();
+
+        // Find first available copy (no active loan)
+        var copy = await _db.BookCopies
+            .Where(c => c.BookId == bookId &&
+                        !c.Loans.Any(l => l.ReturnedAt == null))
+            .FirstOrDefaultAsync()
+            ?? throw new BookNotAvailableException(bookId);
+
+        var loan = new Loan
+        {
+            BookCopyId = copy.Id,
+            UserId = userId,
+            BorrowedAt = DateTime.UtcNow,
+        };
+
+        _db.Loans.Add(loan);
+        await _db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        // Reload with navigation properties for the response
+        await _db.Entry(loan).Reference(l => l.BookCopy).LoadAsync();
+        await _db.Entry(loan.BookCopy).Reference(c => c.Book).LoadAsync();
+
+        return ToDto(loan);
+    }
+
+    public async Task<LoanDto> ReturnLoanAsync(int userId, int loanId)
+    {
+        var loan = await _db.Loans
+            .Include(l => l.BookCopy)
+                .ThenInclude(c => c.Book)
+            .FirstOrDefaultAsync(l => l.Id == loanId)
+            ?? throw new LoanNotFoundException(loanId);
+
+        if (loan.UserId != userId)
+            throw new LoanForbiddenException();
+
+        if (loan.ReturnedAt is not null)
+            throw new LoanAlreadyReturnedException(loanId);
+
+        loan.ReturnedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        return ToDto(loan);
+    }
+
+    private static LoanDto ToDto(Loan l) => new(
+        l.Id,
+        l.BookCopy.BookId,
+        l.BookCopy.Book.Title,
+        l.BookCopy.Book.Author,
+        l.BookCopy.Book.CoverUrl,
+        l.BorrowedAt,
+        l.ReturnedAt
+    );
 }

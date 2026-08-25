@@ -1,24 +1,39 @@
 namespace FrendaBibliotek.Api.Middleware;
 
-// Extracts the current borrower from the X-Borrower-Id header
-// and makes it available as a scoped service throughout the request pipeline.
-
-public class BorrowerContext
+/// <summary>
+/// Scoped service that holds the current user's ID for the duration of a request.
+/// Populated by <see cref="UserContextMiddleware"/> from the X-User-Id header.
+/// </summary>
+public class UserContext
 {
-    public int BorrowerId { get; private set; }
+    public int UserId { get; private set; }
+    public bool IsSet { get; private set; }
 
-    // TODO: implement SetFromHeader
+    public void Set(int userId)
+    {
+        UserId = userId;
+        IsSet = true;
+    }
 }
 
-public class BorrowerContextMiddleware
+/// <summary>
+/// Middleware that reads the X-User-Id header and populates <see cref="UserContext"/>.
+/// Returns 400 if the header is missing or not a valid integer on routes that require it.
+/// </summary>
+public class UserContextMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public BorrowerContextMiddleware(RequestDelegate next) => _next = next;
+    public UserContextMiddleware(RequestDelegate next) => _next = next;
 
-    public async Task InvokeAsync(HttpContext context, BorrowerContext borrowerContext)
+    public async Task InvokeAsync(HttpContext context, UserContext userContext)
     {
-        // TODO: extract X-Borrower-Id and populate BorrowerContext
+        if (context.Request.Headers.TryGetValue("X-User-Id", out var value)
+            && int.TryParse(value, out var userId))
+        {
+            userContext.Set(userId);
+        }
+
         await _next(context);
     }
 }
