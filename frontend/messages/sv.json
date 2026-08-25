@@ -78,7 +78,6 @@
     "title": "Upptäck nya världar",
     "subtitle": "Utforska kurerade rekommendationer och topplistor handplockade för din läsresa.",
     "recommended": "Rekommenderat för dig",
-    "because": "Eftersom du lånade \"{title}\"",
     "topList": "Topplista: Mest lånade denna månad",
     "borrowed": "{count} lånade",
     "available": "Tillgänglig"

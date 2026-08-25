@@ -78,7 +78,6 @@
     "title": "Discover New Worlds",
     "subtitle": "Explore curated recommendations and top trending titles handpicked for your reading journey.",
     "recommended": "Recommended for You",
-    "because": "Because you borrowed \"{title}\"",
     "topList": "Top List: Most Borrowed This Month",
     "borrowed": "{count} borrowed",
     "available": "Available"
