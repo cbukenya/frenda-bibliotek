@@ -1,9 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { isLoggedIn } from '@/lib/api';
 
 
@@ -36,13 +35,11 @@ export default function NavBar() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' || pathname === '/sv' : pathname.includes(href);
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   const switchLocale = (next: string) => {
-    const stripped = pathname.replace(/^\/(en|sv)/, '') || '/';
-    const target = next === 'en' ? stripped : `/${next}${stripped}`;
-    // Full navigation ensures the middleware runs and sets the locale cookie
-    window.location.href = target;
+    setLangOpen(false);
+    router.replace(pathname, { locale: next as 'en' | 'sv' });
   };
 
   return (
