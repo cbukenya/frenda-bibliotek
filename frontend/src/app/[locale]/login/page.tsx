@@ -21,7 +21,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      router.push('/');
+      window.location.href = '/loans';
     } catch (err) {
       setError((err as Error).message);
     } finally {

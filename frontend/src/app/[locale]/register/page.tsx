@@ -34,7 +34,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-      router.push('/');
+      window.location.href = '/loans';
     } catch (err) {
       setError((err as Error).message);
     } finally {
