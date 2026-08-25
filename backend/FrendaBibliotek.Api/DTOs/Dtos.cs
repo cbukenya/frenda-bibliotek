@@ -29,6 +29,7 @@ public record BookSummaryDto(
     string Genre,
     int GenreId,
     int PublishedYear,
+    int TotalPages,
     string? CoverUrl,
     int TotalCopies,
     int AvailableCopies,

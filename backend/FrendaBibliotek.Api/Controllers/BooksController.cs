@@ -55,7 +55,7 @@ public class BooksController : ControllerBase
                 : null;
 
             return new BookSummaryDto(b.Id, b.ISBN, b.Title, b.Author.Name, b.AuthorId, b.Genre.Name, b.GenreId,
-                b.PublishedYear, b.CoverUrl, totalCopies, availableCopies, avgDays);
+                b.PublishedYear, b.TotalPages, b.CoverUrl, totalCopies, availableCopies, avgDays);
         });
 
         return Ok(result);
@@ -77,7 +77,7 @@ public class BooksController : ControllerBase
             .Take(10)
             .Select(x => new BookSummaryDto(
                 x.Book.Id, x.Book.ISBN, x.Book.Title, x.Book.Author.Name, x.Book.AuthorId, x.Book.Genre.Name, x.Book.GenreId,
-                x.Book.PublishedYear, x.Book.CoverUrl,
+                x.Book.PublishedYear, x.Book.TotalPages, x.Book.CoverUrl,
                 x.Book.Copies.Count,
                 x.Book.Copies.Count - x.Book.Copies.SelectMany(c => c.Loans).Count(l => l.ReturnedAt == null),
                 null
@@ -139,7 +139,7 @@ public class BooksController : ControllerBase
             .Take(5)
             .Select(x => new BookSummaryDto(
                 x.Book.Id, x.Book.ISBN, x.Book.Title, x.Book.Author.Name, x.Book.AuthorId, x.Book.Genre.Name, x.Book.GenreId,
-                x.Book.PublishedYear, x.Book.CoverUrl,
+                x.Book.PublishedYear, x.Book.TotalPages, x.Book.CoverUrl,
                 x.Book.Copies.Count,
                 x.Book.Copies.Count - x.Book.Copies.SelectMany(c => c.Loans).Count(l => l.ReturnedAt == null),
                 null

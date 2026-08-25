@@ -150,7 +150,7 @@ export default function BookDetailPage() {
               </div>
               <div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">{t('readingTime')}</p>
-                <p className="font-body-sm text-body-sm font-medium">{estReadingTime(book.avgReadingDays) || '—'}</p>
+                <p className="font-body-sm text-body-sm font-medium">{estReadingTime(book.totalPages) || '—'}</p>
               </div>
               <div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">{t('year')}</p>

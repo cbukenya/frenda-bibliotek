@@ -64,7 +64,7 @@ export default function BookCard({ book, onBorrowed }: Props) {
             <div className="flex items-center gap-2 mb-4 text-on-surface-variant">
               <span className="material-symbols-outlined text-sm">schedule</span>
               <span className="font-label-sm text-label-sm">
-              {estReadingTime(book.avgReadingDays) && t('readingTime', { time: estReadingTime(book.avgReadingDays) })}
+              {estReadingTime(book.totalPages) && t('readingTime', { time: estReadingTime(book.totalPages) })}
               </span>
             </div>
             <button
