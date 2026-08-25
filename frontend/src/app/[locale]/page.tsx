@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { getBooks, getGenreAncestors, type Book, type Genre } from '@/lib/api';
 import BookCard from '@/components/BookCard';
-import GenreFilterModal from '@/components/GenreFilterModal';
+import GenreFilterPanel from '@/components/GenreFilterModal';
 
 export default function BrowsePage() {
   const t = useTranslations('browse');
@@ -53,10 +53,6 @@ export default function BrowsePage() {
     setFilterOpen(false);
   };
 
-  const handleBreadcrumbClick = (genre: Genre | null) => {
-    setSelectedGenre(genre);
-  };
-
   return (
     <div className="pt-24 pb-24 md:pb-8">
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8">
@@ -67,38 +63,55 @@ export default function BrowsePage() {
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">{t('subtitle')}</p>
         </header>
 
-        {/* Subtitle + filter button */}
+        {/* Subtitle row: "Alla böcker" + breadcrumbs + filter */}
         <div className="flex items-center justify-between mb-2">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface">{t('allBooks')}</h2>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* "Alla böcker" — clickable subtitle that resets filter */}
+            <button
+              onClick={() => { setSelectedGenre(null); setFilterOpen(false); }}
+              className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors"
+            >
+              {t('allBooks')}
+            </button>
+
+            {/* Breadcrumb trail — smaller clickable text */}
+            {breadcrumb.map((g, i) => (
+              <span key={g.id} className="flex items-center gap-1.5">
+                <span className="text-outline text-sm">/</span>
+                <button
+                  onClick={() => setSelectedGenre(g)}
+                  className={`text-sm hover:text-primary transition-colors ${
+                    i === breadcrumb.length - 1
+                      ? 'text-primary font-semibold'
+                      : 'text-on-surface-variant'
+                  }`}
+                >
+                  {g.name}
+                </button>
+              </span>
+            ))}
+          </div>
+
+          {/* Filter toggle */}
           <button
-            onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md"
+            onClick={() => setFilterOpen(v => !v)}
+            className={`flex items-center gap-1.5 font-label-md text-label-md transition-colors ${
+              filterOpen ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
+            }`}
           >
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
             {t('filter')}
           </button>
         </div>
 
-        {/* Breadcrumbs */}
-        <div className="flex items-center gap-1.5 mb-8 text-sm flex-wrap">
-          <button
-            onClick={() => handleBreadcrumbClick(null)}
-            className={`hover:text-primary transition-colors ${!selectedGenre ? 'text-primary font-bold' : 'text-on-surface-variant'}`}
-          >
-            {t('allBooks')}
-          </button>
-          {breadcrumb.map((g, i) => (
-            <span key={g.id} className="flex items-center gap-1.5">
-              <span className="text-outline">/</span>
-              <button
-                onClick={() => handleBreadcrumbClick(g)}
-                className={`hover:text-primary transition-colors ${i === breadcrumb.length - 1 ? 'text-primary font-bold' : 'text-on-surface-variant'}`}
-              >
-                {g.name}
-              </button>
-            </span>
-          ))}
-        </div>
+        {/* Inline genre filter panel */}
+        <GenreFilterPanel
+          open={filterOpen}
+          onSelect={handleGenreSelect}
+        />
+
+        {/* Spacing when filter is closed */}
+        {!filterOpen && <div className="mb-6" />}
 
         {/* Book grid */}
         {loading ? (
@@ -128,13 +141,6 @@ export default function BrowsePage() {
           </section>
         )}
       </main>
-
-      {/* Genre filter modal */}
-      <GenreFilterModal
-        open={filterOpen}
-        onClose={() => setFilterOpen(false)}
-        onSelect={handleGenreSelect}
-      />
     </div>
   );
 }
