@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { type Book, borrowBook, estReadingHours, genreEmoji } from '@/lib/api';
+import { type Book, borrowBook, estReadingTime, genreEmoji } from '@/lib/api';
 
 interface Props {
   book: Book;
@@ -64,7 +64,7 @@ export default function BookCard({ book, onBorrowed }: Props) {
             <div className="flex items-center gap-2 mb-4 text-on-surface-variant">
               <span className="material-symbols-outlined text-sm">schedule</span>
               <span className="font-label-sm text-label-sm">
-                {t('readingTime', { time: estReadingHours(book.totalPages) })}
+              {estReadingTime(book.avgReadingDays) && t('readingTime', { time: estReadingTime(book.avgReadingDays) })}
               </span>
             </div>
             <button

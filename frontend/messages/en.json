@@ -43,7 +43,7 @@
     "allOut": "All Out",
     "isbn": "ISBN",
     "genre": "Genre",
-    "pages": "Pages",
+    "readingTime": "Reading time",
     "year": "Year",
     "avgLoan": "Avg loan: {days} days · Est. {time}",
     "recommendationsTitle": "Others who borrowed this also borrowed…"

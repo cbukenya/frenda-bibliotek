@@ -43,7 +43,7 @@
     "allOut": "Alla utlånade",
     "isbn": "ISBN",
     "genre": "Genre",
-    "pages": "Sidor",
+    "readingTime": "Lästid",
     "year": "År",
     "avgLoan": "Medellån: {days} dagar · Ca. {time}",
     "recommendationsTitle": "Andra som lånade den här boken lånade också…"

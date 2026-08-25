@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getBook, borrowBook, type BookDetail, genreEmoji, estReadingHours } from '@/lib/api';
+import { getBook, borrowBook, type BookDetail, genreEmoji, estReadingTime } from '@/lib/api';
 
 export default function BookDetailPage() {
   const t = useTranslations('bookDetail');
@@ -149,8 +149,8 @@ export default function BookDetailPage() {
                 <p className="font-body-sm text-body-sm font-medium">{book.genre}</p>
               </div>
               <div>
-                <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">{t('pages')}</p>
-                <p className="font-body-sm text-body-sm font-medium">{book.totalPages}</p>
+                <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">{t('readingTime')}</p>
+                <p className="font-body-sm text-body-sm font-medium">{estReadingTime(book.avgReadingDays) || '—'}</p>
               </div>
               <div>
                 <p className="font-label-sm text-label-sm text-on-surface-variant mb-1">{t('year')}</p>

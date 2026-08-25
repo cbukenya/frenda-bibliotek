@@ -10,7 +10,6 @@ export interface Book {
   genreId: number;
   description: string;
   publishedYear: number;
-  totalPages: number;
   coverUrl: string | null;
   totalCopies: number;
   availableCopies: number;
@@ -155,10 +154,11 @@ export function formatDate(iso: string): string {
   });
 }
 
-/** Estimated reading time in hours based on 250wpm average and 250 words/page. */
-export function estReadingHours(totalPages: number): string {
-  const hours = Math.round((totalPages * 250) / 250 / 60);
-  return hours < 1 ? '<1h read' : `${hours}h read`;
+/** Estimated reading time based on avgReadingDays from API. */
+export function estReadingTime(days: number | null): string {
+  if (days === null || days === undefined || isNaN(days)) return '';
+  if (days < 1) return '<1d read';
+  return `${Math.round(days)}d read`;
 }
 
 /** Cover image URL — falls back to a genre-coloured gradient data URI. */
