@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FrendaBibliotek.Api.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260825131346_InitialCreate")]
+    [Migration("20260825135813_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -201,6 +201,10 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("UserType")
                         .IsRequired()

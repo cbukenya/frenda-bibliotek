@@ -98,9 +98,8 @@
     "emailPlaceholder": "namn@exempel.se",
     "passwordLabel": "Lösenord",
     "passwordPlaceholder": "••••••••",
-    "rememberMe": "Kom ihåg mig",
-    "forgotPassword": "Glömt lösenord?",
     "submit": "Logga in",
+    "loggingIn": "Loggar in…",
     "noAccount": "Ny på Frenda Bibliotek?",
     "createAccount": "Skapa konto"
   },
@@ -115,6 +114,9 @@
     "confirmPasswordLabel": "Bekräfta lösenord",
     "passwordPlaceholder": "••••••••",
     "submit": "Skapa konto",
+    "creating": "Skapar…",
+    "passwordMismatch": "Lösenorden matchar inte.",
+    "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
     "hasAccount": "Har du redan ett konto?",
     "loginLink": "Logga in"
   }

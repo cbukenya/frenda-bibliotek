@@ -140,14 +140,13 @@ export default function NavBar() {
                     {t('myLoans')}
                   </Link>
                   <hr className="my-1 border-outline-variant/20" />
-                  <Link
-                    href="/login"
-                    onClick={() => setUserOpen(false)}
+                  <button
+                    onClick={() => { setUserOpen(false); import('@/lib/api').then(m => m.logout()); }}
                     className="flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors"
                   >
                     <span className="material-symbols-outlined text-[18px]">logout</span>
                     {t('logout')}
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>

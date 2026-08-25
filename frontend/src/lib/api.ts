@@ -52,43 +52,117 @@ export interface User {
   email: string;
 }
 
-// ─── User context ─────────────────────────────────────────────────────────────
-
-const DEFAULT_USER_ID = 1;
-
-export function getCurrentUserId(): number {
-  if (typeof window === 'undefined') return DEFAULT_USER_ID;
-  const stored = localStorage.getItem('frenda_user_id');
-  return stored ? parseInt(stored, 10) : DEFAULT_USER_ID;
+export interface AuthResponse {
+  token: string;
+  user: User;
 }
 
-export function setCurrentUserId(id: number): void {
-  localStorage.setItem('frenda_user_id', String(id));
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+const TOKEN_KEY = 'frenda_token';
+const USER_KEY = 'frenda_user';
+
+export function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredUser(): User | null {
+  if (typeof window === 'undefined') return null;
+  const raw = localStorage.getItem(USER_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+export function isLoggedIn(): boolean {
+  return !!getToken();
+}
+
+function setAuth(token: string, user: User): void {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  // Set cookie for middleware route protection
+  document.cookie = `frenda_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
   window.dispatchEvent(new Event('frenda_user_changed'));
 }
 
-// Client-side fetches use relative URLs → Next.js rewrite proxy forwards to the API container.
+export function logout(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  document.cookie = 'frenda_token=; path=/; max-age=0';
+  window.location.href = '/login';
+}
+
+// ─── API Client ───────────────────────────────────────────────────────────────
+
 const API_BASE = '';
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const userId = getCurrentUserId();
+  const token = getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...options.headers as Record<string, string>,
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-User-Id': String(userId),
-      ...options.headers,
-    },
+    headers,
   });
+
+  // If unauthorized, redirect to login
+  if (res.status === 401) {
+    if (typeof window !== 'undefined') {
+      logout();
+    }
+    throw new Error('Unauthorized');
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`API ${res.status}: ${text || res.statusText}`);
   }
 
-  // 204 No Content
   if (res.status === 204) return undefined as T;
   return res.json();
+}
+
+// ─── Auth endpoints (no token needed) ─────────────────────────────────────────
+
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(data.error || 'Login failed');
+  }
+
+  const data: AuthResponse = await res.json();
+  setAuth(data.token, data.user);
+  return data;
+}
+
+export async function register(name: string, email: string, password: string): Promise<AuthResponse> {
+  const res = await fetch(`${API_BASE}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(data.error || 'Registration failed');
+  }
+
+  const data: AuthResponse = await res.json();
+  setAuth(data.token, data.user);
+  return data;
 }
 
 // ─── Books ────────────────────────────────────────────────────────────────────
@@ -129,7 +203,7 @@ export const getUsers = (): Promise<User[]> =>
 export const getUser = (id: number): Promise<User> =>
   apiFetch(`/api/users/${id}`);
 
-// ─── Genres ─────────────────────────────────────────────────────────────────────────────
+// ─── Genres ───────────────────────────────────────────────────────────────────
 
 export const getGenreTree = (): Promise<Genre[]> =>
   apiFetch('/api/genres/tree');
@@ -142,7 +216,6 @@ export const getAuthors = (): Promise<Author[]> =>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Days until due (loans are 14 days). Returns negative if overdue. */
 export function daysUntilDue(borrowedAt: string): number {
   const due = new Date(borrowedAt);
   due.setDate(due.getDate() + 14);
@@ -155,7 +228,6 @@ export function formatDate(iso: string): string {
   });
 }
 
-/** Estimated reading time from page count (~40 pages/hour). */
 export function estReadingTime(totalPages: number): string {
   if (!totalPages || totalPages <= 0) return '';
   const hours = Math.round(totalPages / 40);
@@ -163,7 +235,6 @@ export function estReadingTime(totalPages: number): string {
   return `${hours}h read`;
 }
 
-/** Cover image URL — falls back to a genre-coloured gradient data URI. */
 export function coverUrl(book: Pick<Book, 'coverUrl' | 'genre' | 'title'>): string | null {
   return book.coverUrl ?? null;
 }
@@ -171,26 +242,16 @@ export function coverUrl(book: Pick<Book, 'coverUrl' | 'genre' | 'title'>): stri
 const GENRE_EMOJI: Record<string, string> = {
   'Programming':      '💻',
   'Agile & Craftsmanship': '💻',
-  'Systems Programming': '⚙️',
   'Design':           '🎨',
   'UX Design':        '🎨',
   'Psychology':       '🧠',
-  'Cognitive Psychology': '🧠',
   'History':          '📜',
   'Science Fiction':  '🚀',
   'Space Opera':      '🚀',
-  'Cyberpunk':        '🤖',
-  'Military Sci-Fi':  '⚔️',
   'Fantasy':          '🧙',
-  'Epic Fantasy':     '🧙',
-  'Urban Fantasy':    '🏙️',
-  'Literary Fiction': '📖',
   'Memoir':           '📖',
   'Self-Help':        '⭐',
   'Philosophy':       '🏛️',
-  'Science':          '🔬',
-  'Physics':          '⚛️',
-  'Technology':       '🖥️',
   'Fiction':          '📚',
   'Non-Fiction':      '📚',
 };

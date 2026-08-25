@@ -1,12 +1,14 @@
 using FrendaBibliotek.Api.DTOs;
 using FrendaBibliotek.Api.Middleware;
 using FrendaBibliotek.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrendaBibliotek.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class LoansController : ControllerBase
 {
     private readonly IBookService _bookService;
@@ -18,22 +20,11 @@ public class LoansController : ControllerBase
         _userContext = userContext;
     }
 
-    private IActionResult RequireUser(out int userId)
-    {
-        userId = _userContext.UserId;
-        if (!_userContext.IsSet)
-            return BadRequest(new { error = "X-User-Id header is required." });
-        return null!;
-    }
-
     // GET /api/loans
     [HttpGet]
     public async Task<IActionResult> GetMyLoans()
     {
-        var guard = RequireUser(out var userId);
-        if (guard is not null) return guard;
-
-        var loans = await _bookService.GetMyLoansAsync(userId);
+        var loans = await _bookService.GetMyLoansAsync(_userContext.UserId);
         return Ok(loans);
     }
 
@@ -41,12 +32,9 @@ public class LoansController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Borrow([FromBody] BorrowRequest request)
     {
-        var guard = RequireUser(out var userId);
-        if (guard is not null) return guard;
-
         try
         {
-            var loan = await _bookService.BorrowBookAsync(userId, request.ISBN);
+            var loan = await _bookService.BorrowBookAsync(_userContext.UserId, request.ISBN);
             return CreatedAtAction(nameof(GetMyLoans), loan);
         }
         catch (BookNotAvailableException ex)
@@ -59,12 +47,9 @@ public class LoansController : ControllerBase
     [HttpPatch("{id}/return")]
     public async Task<IActionResult> Return(int id)
     {
-        var guard = RequireUser(out var userId);
-        if (guard is not null) return guard;
-
         try
         {
-            var loan = await _bookService.ReturnLoanAsync(userId, id);
+            var loan = await _bookService.ReturnLoanAsync(_userContext.UserId, id);
             return Ok(loan);
         }
         catch (LoanNotFoundException ex)

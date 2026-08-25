@@ -56,6 +56,7 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
                     UserType = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>

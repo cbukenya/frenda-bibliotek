@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using FrendaBibliotek.Api.DTOs;
@@ -20,24 +21,26 @@ public class LoansApiTests : IClassFixture<ApiFactory>
         _client = factory.CreateClient();
     }
 
-    private void SetUser(int userId) =>
-        _client.DefaultRequestHeaders.Remove("X-User-Id").ToString();
+    private void SetUser(int userId, string email = "test@test.se", string name = "Test User")
+    {
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", ApiFactory.CreateTestToken(userId, email, name));
+    }
 
     // ─── GET /api/loans ───────────────────────────────────────────────────────
 
     [Fact]
-    public async Task GetMyLoans_WithoutHeader_Returns400()
+    public async Task GetMyLoans_WithoutAuth_Returns401()
     {
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        var response = await _client.GetAsync("/api/loans");
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var response = await client.GetAsync("/api/loans");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
     public async Task GetMyLoans_ForAlice_ReturnsActiveLoans()
     {
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        _client.DefaultRequestHeaders.Add("X-User-Id", AliceId.ToString());
+        SetUser(AliceId, "alice@bibliotek.se", "Alice Lindgren");
 
         var loans = await _client.GetFromJsonAsync<List<LoanDto>>("/api/loans");
 
@@ -51,8 +54,7 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task BorrowBook_ValidRequest_Returns201()
     {
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        _client.DefaultRequestHeaders.Add("X-User-Id", BobId.ToString());
+        SetUser(BobId, "bob@bibliotek.se", "Bob Eriksson");
 
         // Book 3 (Thinking, Fast and Slow) — ISBN 9780374533557
         var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780374533557"));
@@ -66,11 +68,11 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
-    public async Task BorrowBook_WithoutHeader_Returns400()
+    public async Task BorrowBook_WithoutAuth_Returns401()
     {
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780465050659"));
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var response = await client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780465050659"));
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     // ─── PATCH /api/loans/{id}/return ─────────────────────────────────────────
@@ -79,14 +81,12 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     public async Task ReturnLoan_OtherUserLoan_Returns403()
     {
         // Get Alice's active loans
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        _client.DefaultRequestHeaders.Add("X-User-Id", AliceId.ToString());
+        SetUser(AliceId, "alice@bibliotek.se", "Alice Lindgren");
         var aliceLoans = await _client.GetFromJsonAsync<List<LoanDto>>("/api/loans");
         var aliceActiveLoan = aliceLoans!.First(l => l.ReturnedAt == null);
 
         // Bob tries to return Alice's loan
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        _client.DefaultRequestHeaders.Add("X-User-Id", BobId.ToString());
+        SetUser(BobId, "bob@bibliotek.se", "Bob Eriksson");
         var response = await _client.PatchAsync($"/api/loans/{aliceActiveLoan.Id}/return", null);
 
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -95,8 +95,7 @@ public class LoansApiTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task ReturnLoan_NotFound_Returns404()
     {
-        _client.DefaultRequestHeaders.Remove("X-User-Id");
-        _client.DefaultRequestHeaders.Add("X-User-Id", AliceId.ToString());
+        SetUser(AliceId, "alice@bibliotek.se", "Alice Lindgren");
 
         var response = await _client.PatchAsync("/api/loans/99999/return", null);
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

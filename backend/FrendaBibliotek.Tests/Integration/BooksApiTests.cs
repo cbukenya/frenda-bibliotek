@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using FrendaBibliotek.Api.DTOs;
@@ -13,6 +14,9 @@ public class BooksApiTests : IClassFixture<ApiFactory>
     public BooksApiTests(ApiFactory factory)
     {
         _client = factory.CreateClient();
+        // Authenticate as Alice (user 1) for all requests
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", ApiFactory.CreateTestToken(1, "alice@bibliotek.se", "Alice Lindgren"));
     }
 
     [Fact]
@@ -25,6 +29,14 @@ public class BooksApiTests : IClassFixture<ApiFactory>
         var books = await response.Content.ReadFromJsonAsync<List<BookSummaryDto>>();
         books.Should().NotBeNullOrEmpty();
         books!.Count.Should().Be(10); // seeded 10 books
+    }
+
+    [Fact]
+    public async Task GetBooks_WithoutAuth_Returns401()
+    {
+        var client = new HttpClient { BaseAddress = _client.BaseAddress };
+        var response = await client.GetAsync("/api/books");
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

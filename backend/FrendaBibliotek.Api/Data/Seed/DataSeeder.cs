@@ -93,16 +93,17 @@ public static class DataSeeder
         await db.SaveChangesAsync();
 
         // ─── Users ────────────────────────────────────────────────────────────
+        var demoHash = BCrypt.Net.BCrypt.HashPassword("password123");
         var users = new List<User>
         {
-            new() { Name = "Alice Lindgren", Email = "alice@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Bob Eriksson", Email = "bob@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Clara Svensson", Email = "clara@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "David Johansson", Email = "david@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Eva Nilsson", Email = "eva@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Fredrik Berg", Email = "fredrik@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Greta Holm", Email = "greta@bibliotek.se", UserType = UserType.LibraryUser },
-            new() { Name = "Hans Björk", Email = "hans@bibliotek.se", UserType = UserType.LibraryUser },
+            new() { Name = "Alice Lindgren", Email = "alice@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Bob Eriksson", Email = "bob@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Clara Svensson", Email = "clara@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "David Johansson", Email = "david@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Eva Nilsson", Email = "eva@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Fredrik Berg", Email = "fredrik@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Greta Holm", Email = "greta@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
+            new() { Name = "Hans Björk", Email = "hans@bibliotek.se", PasswordHash = demoHash, UserType = UserType.LibraryUser },
         };
 
         db.Users.AddRange(users);

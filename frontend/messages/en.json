@@ -98,9 +98,8 @@
     "emailPlaceholder": "name@example.com",
     "passwordLabel": "Password",
     "passwordPlaceholder": "••••••••",
-    "rememberMe": "Remember me",
-    "forgotPassword": "Forgot password?",
     "submit": "Log in",
+    "loggingIn": "Logging in…",
     "noAccount": "New to Frenda Bibliotek?",
     "createAccount": "Create account"
   },
@@ -115,6 +114,9 @@
     "confirmPasswordLabel": "Confirm password",
     "passwordPlaceholder": "••••••••",
     "submit": "Create account",
+    "creating": "Creating…",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordTooShort": "Password must be at least 6 characters.",
     "hasAccount": "Already have an account?",
     "loginLink": "Log in"
   }

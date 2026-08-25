@@ -199,6 +199,10 @@ namespace FrendaBibliotek.Api.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UserType")
                         .IsRequired()
                         .HasColumnType("text");
