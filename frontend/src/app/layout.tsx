@@ -1,6 +1,11 @@
-// Minimal root layout required by Next.js App Router.
-// The real layout (with NavBar, locale provider, etc.) lives in app/[locale]/layout.tsx.
-// The middleware redirects all requests to the appropriate locale segment.
+import './globals.css';
+
+// Root layout: Next.js requires exactly one <html> and <body> in the tree.
+// The locale-specific provider lives in app/[locale]/layout.tsx.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  );
 }

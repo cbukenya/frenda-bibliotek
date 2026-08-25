@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import '../globals.css';
 import NavBar from '@/components/NavBar';
 import UserSwitcher from '@/components/UserSwitcher';
 
@@ -17,18 +16,13 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  // Load messages for the current locale (server-side, no waterfall)
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <NavBar />
-          <main className="page">{children}</main>
-          <UserSwitcher />
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <NavBar />
+      <main className="page">{children}</main>
+      <UserSwitcher />
+    </NextIntlClientProvider>
   );
 }
