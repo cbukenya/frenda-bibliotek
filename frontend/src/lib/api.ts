@@ -43,6 +43,7 @@ export interface Loan {
   bookAuthor: string;
   coverUrl: string | null;
   borrowedAt: string;
+  dueDate: string;        // set server-side as borrowedAt + 14 days
   returnedAt: string | null;
 }
 
@@ -167,12 +168,36 @@ export async function register(name: string, email: string, password: string): P
 
 // ─── Books ────────────────────────────────────────────────────────────────────
 
-export const getBooks = (filters?: { genreId?: number; authorId?: number }): Promise<Book[]> => {
+export const getBooks = async (filters?: { genreId?: number; authorId?: number }): Promise<Book[]> => {
   const params = new URLSearchParams();
   if (filters?.genreId) params.set('genreId', String(filters.genreId));
   if (filters?.authorId) params.set('authorId', String(filters.authorId));
+  // Request all books in one page to keep existing UI unchanged
+  params.set('pageSize', '1000');
   const qs = params.toString();
-  return apiFetch(`/api/books${qs ? `?${qs}` : ''}`);
+  const result = await apiFetch(`/api/books?${qs}`) as { items: Book[] };
+  // Backend now returns { items, total, page, pageSize } — unwrap for callers
+  return result.items;
+};
+
+export interface PagedBooks {
+  items: Book[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export const getBooksPaged = async (
+  page: number,
+  pageSize: number,
+  filters?: { genreId?: number; authorId?: number }
+): Promise<PagedBooks> => {
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('pageSize', String(pageSize));
+  if (filters?.genreId) params.set('genreId', String(filters.genreId));
+  if (filters?.authorId) params.set('authorId', String(filters.authorId));
+  return await apiFetch(`/api/books?${params.toString()}`) as PagedBooks;
 };
 
 export const getTopBooks = (): Promise<Book[]> =>
@@ -216,9 +241,9 @@ export const getAuthors = (): Promise<Author[]> =>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-export function daysUntilDue(borrowedAt: string): number {
-  const due = new Date(borrowedAt);
-  due.setDate(due.getDate() + 14);
+export function daysUntilDue(loan: Loan): number {
+  // Use the server-supplied dueDate rather than assuming a fixed 14-day window
+  const due = new Date(loan.dueDate);
   return Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 

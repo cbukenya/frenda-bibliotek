@@ -69,8 +69,10 @@
   "loanCard": {
     "borrowedLabel": "Borrowed:",
     "dueDateLabel": "Due Date:",
-    "returnBook": "↩ Return Book",
+    "returnBook": "Return Book",
     "returning": "Returning…",
+    "confirmYes": "Yes, return",
+    "confirmCancel": "Cancel",
     "dueIn": "Due in {days}d",
     "overdue": "{days}d overdue"
   },

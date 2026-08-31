@@ -69,8 +69,10 @@
   "loanCard": {
     "borrowedLabel": "Lånad:",
     "dueDateLabel": "Förfallodatum:",
-    "returnBook": "↩ Återlämna bok",
+    "returnBook": "Återlämna bok",
     "returning": "Återlämnar…",
+    "confirmYes": "Ja, lämna tillbaka",
+    "confirmCancel": "Avbryt",
     "dueIn": "Om {days}d",
     "overdue": "{days}d försenad"
   },

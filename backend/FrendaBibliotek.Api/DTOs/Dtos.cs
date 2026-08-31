@@ -54,6 +54,16 @@ public record BookDetailDto(
     IEnumerable<BookSummaryDto> Recommendations
 );
 
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+/// <summary>Wraps a paginated list with total count and paging metadata.</summary>
+public record PagedResult<T>(
+    IEnumerable<T> Items,
+    int Total,
+    int Page,
+    int PageSize
+);
+
 // ─── Loans ────────────────────────────────────────────────────────────────────
 
 /// <summary>Borrow a book by its ISBN — unambiguous and human-readable.</summary>
@@ -67,6 +77,7 @@ public record LoanDto(
     string BookAuthor,
     string? CoverUrl,
     DateTime BorrowedAt,
+    DateTime DueDate,
     DateTime? ReturnedAt
 );
 

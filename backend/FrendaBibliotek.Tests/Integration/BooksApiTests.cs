@@ -22,15 +22,17 @@ public class BooksApiTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
-    public async Task GetBooks_ReturnsAllBooks()
+    public async Task GetBooks_ReturnsPagedResult()
     {
         var response = await _client.GetAsync("/api/books");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var books = await response.Content.ReadFromJsonAsync<List<BookSummaryDto>>();
-        books.Should().NotBeNullOrEmpty();
-        books!.Count.Should().Be(10); // seeded 10 books
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<BookSummaryDto>>();
+        result.Should().NotBeNull();
+        result!.Items.Should().NotBeNullOrEmpty();
+        result.Total.Should().BeGreaterThanOrEqualTo(10);
+        result.Page.Should().Be(1);
     }
 
     [Fact]
@@ -43,11 +45,23 @@ public class BooksApiTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task GetBooks_PaginationSecondPage_ReturnsCorrectSlice()
+    {
+        // Page 1 with pageSize=5 should return exactly 5 items
+        var result = await _client.GetFromJsonAsync<PagedResult<BookSummaryDto>>("/api/books?page=2&pageSize=5");
+
+        result.Should().NotBeNull();
+        result!.Total.Should().BeGreaterThanOrEqualTo(10);
+        result.Page.Should().Be(2);
+        result.Items.Should().HaveCount(5);
+    }
+
+    [Fact]
     public async Task GetBooks_IncludesAvailabilityData()
     {
-        var books = await _client.GetFromJsonAsync<List<BookSummaryDto>>("/api/books");
+        var result = await _client.GetFromJsonAsync<PagedResult<BookSummaryDto>>("/api/books");
 
-        books.Should().AllSatisfy(b =>
+        result!.Items.Should().AllSatisfy(b =>
         {
             b.TotalCopies.Should().BeGreaterThan(0);
             b.AvailableCopies.Should().BeGreaterThanOrEqualTo(0);
@@ -95,5 +109,18 @@ public class BooksApiTests : IClassFixture<ApiFactory>
         // Seeded historical loans exist so avgReadingDays should be set
         book!.AvgReadingDays.Should().NotBeNull();
         book.AvgReadingDays.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task GetBookById_RecommendationsNeverEmpty()
+    {
+        // Even for a book with no loan history, the genre fallback should populate recommendations
+        // (all seeded books share genres so at least one genre-based result should exist)
+        var book = await _client.GetFromJsonAsync<BookDetailDto>("/api/books/1");
+
+        book.Should().NotBeNull();
+        book!.Recommendations.Should().NotBeNull();
+        // Genre fallback ensures this is never empty given we have 10 seeded books in the same genres
+        book.Recommendations.Should().NotBeEmpty();
     }
 }

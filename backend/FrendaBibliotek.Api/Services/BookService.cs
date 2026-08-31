@@ -37,11 +37,13 @@ public class BookService : IBookService
             .FirstOrDefaultAsync()
             ?? throw new BookNotAvailableException(isbn);
 
+        var now = DateTime.UtcNow;
         var loan = new Loan
         {
             BookCopyId = copy.Id,
             UserId = userId,
-            BorrowedAt = DateTime.UtcNow,
+            BorrowedAt = now,
+            DueDate = now.AddDays(14), // standard 14-day lending period
         };
 
         _db.Loans.Add(loan);
@@ -87,6 +89,7 @@ public class BookService : IBookService
         l.BookCopy.Book.Author.Name,
         l.BookCopy.Book.CoverUrl,
         l.BorrowedAt,
+        l.DueDate,
         l.ReturnedAt
     );
 }

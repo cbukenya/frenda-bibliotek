@@ -104,4 +104,60 @@ public class LoansApiTests : IClassFixture<ApiFactory>
         var response = await _client.PatchAsync("/api/loans/99999/return", null);
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    // ─── Full borrow → return journey ─────────────────────────────────────────
+
+    [Fact]
+    public async Task BorrowThenReturn_FullFlow_UpdatesLoanCorrectly()
+    {
+        // Use a dedicated user (Clara = 3) so we don't collide with other tests
+        const int ClaraId = 3;
+        SetUser(ClaraId, "clara@bibliotek.se", "Clara Svensson");
+
+        // Step 1: Borrow a book (Atomic Habits — ISBN 9780735211292)
+        var borrowResponse = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780735211292"));
+        borrowResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var loan = await borrowResponse.Content.ReadFromJsonAsync<LoanDto>();
+        loan.Should().NotBeNull();
+        loan!.ISBN.Should().Be("9780735211292");
+        loan.ReturnedAt.Should().BeNull("the book was just borrowed");
+        loan.DueDate.Should().BeAfter(loan.BorrowedAt, "due date must be in the future relative to borrow");
+
+        // Step 2: Verify it appears in Clara's loan list
+        var myLoans = await _client.GetFromJsonAsync<List<LoanDto>>("/api/loans");
+        myLoans.Should().Contain(l => l.Id == loan.Id && l.ReturnedAt == null);
+
+        // Step 3: Return the loan
+        var returnResponse = await _client.PatchAsync($"/api/loans/{loan.Id}/return", null);
+        returnResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var returned = await returnResponse.Content.ReadFromJsonAsync<LoanDto>();
+        returned.Should().NotBeNull();
+        returned!.ReturnedAt.Should().NotBeNull("the loan should now be marked as returned");
+        returned.ReturnedAt!.Value.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromSeconds(10));
+
+        // Step 4: Verify the loan history still shows it (ReturnedAt is set, not deleted)
+        var loansAfterReturn = await _client.GetFromJsonAsync<List<LoanDto>>("/api/loans");
+        var historicalLoan = loansAfterReturn!.FirstOrDefault(l => l.Id == loan.Id);
+        historicalLoan.Should().NotBeNull("loan history must be preserved — rows are never deleted");
+        historicalLoan!.ReturnedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task BorrowBook_LoanHasDueDate_14DaysFromBorrow()
+    {
+        SetUser(BobId, "bob@bibliotek.se", "Bob Eriksson");
+
+        // ISBN: Sapiens
+        var response = await _client.PostAsJsonAsync("/api/loans", new BorrowRequest("9780062316097"));
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var loan = await response.Content.ReadFromJsonAsync<LoanDto>();
+        loan.Should().NotBeNull();
+
+        var expectedDue = loan!.BorrowedAt.AddDays(14);
+        loan.DueDate.Should().BeCloseTo(expectedDue, precision: TimeSpan.FromSeconds(5),
+            because: "DueDate should be exactly 14 days after BorrowedAt");
+    }
 }
