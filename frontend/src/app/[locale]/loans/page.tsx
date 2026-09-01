@@ -23,7 +23,7 @@ export default function LoansPage() {
   }, []);
 
   const active = loans.filter(l => !l.returnedAt)
-    .sort((a, b) => new Date(b.borrowedAt).getTime() - new Date(a.borrowedAt).getTime());
+    .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.borrowedAt).getTime());
   const history = loans.filter(l => l.returnedAt)
     .sort((a, b) => new Date(b.returnedAt!).getTime() - new Date(a.returnedAt!).getTime());
 

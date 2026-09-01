@@ -119,6 +119,12 @@ public class BookService : IBookService
     {
         await using var tx = await _db.Database.BeginTransactionAsync();
 
+        // NOTE: Under high concurrency, two transactions could both read the same copy as
+        // available before either commits (Read Committed doesn't prevent this).
+        // For a production system with heavy traffic, use raw SQL with row-level locking:
+        //   SELECT * FROM "BookCopies" WHERE ... FOR UPDATE SKIP LOCKED
+        // This locks the selected row so concurrent requests skip it and grab the next copy.
+        // For a library app with normal traffic, the current approach is sufficient.
         var copy = await _db.BookCopies
             .Where(c => c.Book.ISBN == isbn &&
                         !c.Loans.Any(l => l.ReturnedAt == null))
