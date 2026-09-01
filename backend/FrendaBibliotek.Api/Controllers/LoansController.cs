@@ -34,7 +34,7 @@ public class LoansController : ControllerBase
     {
         try
         {
-            var loan = await _bookService.BorrowBookAsync(_userContext.UserId, request.ISBN);
+            var loan = await _bookService.BorrowBookAsync(_userContext.UserId, request.ISBN, request.DueDate);
             return CreatedAtAction(nameof(GetMyLoans), loan);
         }
         catch (BookNotAvailableException ex)

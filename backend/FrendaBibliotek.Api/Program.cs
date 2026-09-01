@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using FrendaBibliotek.Api.Data;
 using FrendaBibliotek.Api.Data.Seed;
@@ -99,6 +100,27 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+
+// Global error handler — catches any unhandled exception and returns clean JSON
+// instead of leaking stack traces. Runs before all other middleware.
+app.UseExceptionHandler(errApp =>
+{
+    errApp.Run(async ctx =>
+    {
+        var feature = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        var requestId = Activity.Current?.Id ?? ctx.TraceIdentifier;
+        var logger = ctx.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(feature?.Error, "Unhandled exception [{RequestId}]", requestId);
+
+        ctx.Response.StatusCode = 500;
+        ctx.Response.ContentType = "application/json";
+        await ctx.Response.WriteAsJsonAsync(new
+        {
+            error = "An unexpected error occurred.",
+            requestId
+        });
+    });
+});
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

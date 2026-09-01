@@ -94,5 +94,10 @@ public class AppDbContext : DbContext, IAppDbContext
             u.Property(x => x.Email).IsRequired().HasMaxLength(200);
             u.HasIndex(x => x.Email).IsUnique();
         });
+
+        // DueDate defaults to 14 days after borrow for any rows inserted without it
+        modelBuilder.Entity<Loan>()
+            .Property(l => l.DueDate)
+            .HasDefaultValueSql("NOW() + INTERVAL '14 days'");
     }
 }

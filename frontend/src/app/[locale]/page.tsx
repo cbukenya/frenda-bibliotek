@@ -3,14 +3,19 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getBooks, getGenreAncestors, type Book, type Genre } from '@/lib/api';
+import { getBooksPaged, getGenreAncestors, type Book, type Genre } from '@/lib/api';
 import BookCard from '@/components/BookCard';
+import Pagination from '@/components/Pagination';
 import GenreFilterPanel, { type FilterSelection } from '@/components/GenreFilterModal';
+
+const PAGE_SIZE = 9; // 3 columns × 3 rows on desktop
 
 export default function BrowsePage() {
   const t = useTranslations('browse');
   const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
+  const [totalBooks, setTotalBooks] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
 
@@ -19,17 +24,21 @@ export default function BrowsePage() {
   const [filters, setFilters] = useState<FilterSelection>({ genre: null, author: null });
   const [breadcrumb, setBreadcrumb] = useState<Genre[]>([]);
 
-  const load = useCallback(() => {
+  const load = useCallback((page: number) => {
     setLoading(true);
     const params: { genreId?: number; authorId?: number } = {};
     if (filters.genre) params.genreId = filters.genre.id;
     if (filters.author) params.authorId = filters.author.id;
-    getBooks(Object.keys(params).length > 0 ? params : undefined)
-      .then(setBooks)
+    getBooksPaged(page, PAGE_SIZE, Object.keys(params).length > 0 ? params : undefined)
+      .then(result => {
+        setBooks(result.items);
+        setTotalBooks(result.total);
+        setCurrentPage(result.page);
+      })
       .finally(() => setLoading(false));
   }, [filters]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(1); }, [load]);
 
   // Load breadcrumb ancestors when genre changes
   useEffect(() => {
@@ -39,6 +48,11 @@ export default function BrowsePage() {
       setBreadcrumb([]);
     }
   }, [filters.genre]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -50,6 +64,14 @@ export default function BrowsePage() {
       b.isbn.includes(q)
     );
   }, [books, query]);
+
+  const totalPages = Math.ceil(totalBooks / PAGE_SIZE);
+
+  const handlePageChange = (page: number) => {
+    setQuery(''); // Clear client-side filter when paginating
+    load(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleFilterSelect = (newFilters: FilterSelection) => {
     setFilters(newFilters);
@@ -138,7 +160,7 @@ export default function BrowsePage() {
         {/* Book grid */}
         {loading ? (
           <div className="bento-grid">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: PAGE_SIZE }).map((_, i) => (
               <div key={i} className="rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm animate-pulse">
                 <div className="h-64 bg-surface-container-high" />
                 <div className="p-gutter space-y-3">
@@ -156,11 +178,20 @@ export default function BrowsePage() {
             <p className="font-body-md text-body-md">{t('noResultsHint')}</p>
           </div>
         ) : (
-          <section className="bento-grid">
-            {filtered.map(book => (
-              <BookCard key={book.id} book={book} onBorrowed={load} />
-            ))}
-          </section>
+          <>
+            <section className="bento-grid">
+              {filtered.map(book => (
+                <BookCard key={book.id} book={book} onBorrowed={() => load(currentPage)} />
+              ))}
+            </section>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
         )}
       </main>
     </div>

@@ -22,8 +22,10 @@ export default function LoansPage() {
     return () => window.removeEventListener('frenda_user_changed', load);
   }, []);
 
-  const active = loans.filter(l => !l.returnedAt);
-  const history = loans.filter(l => l.returnedAt);
+  const active = loans.filter(l => !l.returnedAt)
+    .sort((a, b) => new Date(b.borrowedAt).getTime() - new Date(a.borrowedAt).getTime());
+  const history = loans.filter(l => l.returnedAt)
+    .sort((a, b) => new Date(b.returnedAt!).getTime() - new Date(a.returnedAt!).getTime());
 
   return (
     <div className="pt-24 pb-20 md:pb-8">

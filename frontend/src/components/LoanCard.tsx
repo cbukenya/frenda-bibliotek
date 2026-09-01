@@ -12,7 +12,8 @@ interface Props {
 export default function LoanCard({ loan, onReturned }: Props) {
   const t = useTranslations('loanCard');
   const [loading, setLoading] = useState(false);
-  const days = daysUntilDue(loan.borrowedAt);
+  const [confirming, setConfirming] = useState(false);
+  const days = daysUntilDue(loan);
 
   const badgeColor = days > 5 ? 'text-status-available' : days >= 0 ? 'text-status-borrowed' : 'text-error';
   const badgeLabel = days >= 0 ? t('dueIn', { days }) : t('overdue', { days: Math.abs(days) });
@@ -21,7 +22,7 @@ export default function LoanCard({ loan, onReturned }: Props) {
     setLoading(true);
     try { await returnLoan(loan.id); onReturned?.(); }
     catch (err) { alert((err as Error).message); }
-    finally { setLoading(false); }
+    finally { setLoading(false); setConfirming(false); }
   };
 
   return (
@@ -51,14 +52,33 @@ export default function LoanCard({ loan, onReturned }: Props) {
           </div>
         </div>
 
-        <button
-          onClick={handleReturn}
-          disabled={loading}
-          className="w-full bg-primary-container text-on-primary-container py-2 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:opacity-90 transition-opacity"
-        >
-          {loading ? t('returning') : t('returnBook')}
-          {!loading && <span className="material-symbols-outlined text-[18px]">keyboard_return</span>}
-        </button>
+        {confirming ? (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleReturn}
+              disabled={loading}
+              className="flex-1 bg-error text-on-error py-2 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              {loading ? t('returning') : t('confirmYes')}
+            </button>
+            {!loading && (
+              <button
+                onClick={() => setConfirming(false)}
+                className="font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors"
+              >
+                {t('confirmCancel')}
+              </button>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirming(true)}
+            className="w-full bg-primary-container text-on-primary-container py-2 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            {t('returnBook')}
+            <span className="material-symbols-outlined text-[18px]">keyboard_return</span>
+          </button>
+        )}
       </div>
     </div>
   );

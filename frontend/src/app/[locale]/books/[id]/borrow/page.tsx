@@ -36,7 +36,7 @@ export default function BorrowBookPage() {
     setBorrowing(true);
     setError('');
     try {
-      await borrowBook(book.isbn);
+      await borrowBook(book.isbn, returnDate);
       setBorrowed(true);
     } catch (err) {
       setError((err as Error).message);

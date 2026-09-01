@@ -6,6 +6,7 @@ public class Loan
     public int BookCopyId { get; set; }
     public int UserId { get; set; }
     public DateTime BorrowedAt { get; set; }
+    public DateTime DueDate { get; set; }
     public DateTime? ReturnedAt { get; set; }
 
     // Navigation
