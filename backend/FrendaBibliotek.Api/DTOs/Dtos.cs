@@ -67,7 +67,7 @@ public record PagedResult<T>(
 // ─── Loans ────────────────────────────────────────────────────────────────────
 
 /// <summary>Borrow a book by its ISBN — unambiguous and human-readable.</summary>
-public record BorrowRequest(string ISBN);
+public record BorrowRequest(string ISBN, DateTime? DueDate = null);
 
 public record LoanDto(
     int Id,

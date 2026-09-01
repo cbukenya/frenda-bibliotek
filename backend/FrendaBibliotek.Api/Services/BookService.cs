@@ -24,7 +24,7 @@ public class BookService : IBookService
         return loans.Select(ToDto);
     }
 
-    public async Task<LoanDto> BorrowBookAsync(int userId, string isbn)
+    public async Task<LoanDto> BorrowBookAsync(int userId, string isbn, DateTime? dueDate = null)
     {
         await using var tx = await _db.Database.BeginTransactionAsync();
 
@@ -43,7 +43,7 @@ public class BookService : IBookService
             BookCopyId = copy.Id,
             UserId = userId,
             BorrowedAt = now,
-            DueDate = now.AddDays(14), // standard 14-day lending period
+            DueDate = dueDate?.ToUniversalTime() ?? now.AddDays(14),
         };
 
         _db.Loans.Add(loan);

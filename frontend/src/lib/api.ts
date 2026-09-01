@@ -211,10 +211,10 @@ export const getBook = (id: number): Promise<BookDetail> =>
 export const getMyLoans = (): Promise<Loan[]> =>
   apiFetch('/api/loans');
 
-export const borrowBook = (isbn: string): Promise<Loan> =>
+export const borrowBook = (isbn: string, dueDate?: string): Promise<Loan> =>
   apiFetch('/api/loans', {
     method: 'POST',
-    body: JSON.stringify({ isbn }),
+    body: JSON.stringify({ isbn, dueDate: dueDate || undefined }),
   });
 
 export const returnLoan = (loanId: number): Promise<Loan> =>
@@ -242,9 +242,10 @@ export const getAuthors = (): Promise<Author[]> =>
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function daysUntilDue(loan: Loan): number {
-  // Use the server-supplied dueDate rather than assuming a fixed 14-day window
-  const due = new Date(loan.dueDate);
-  return Math.ceil((due.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const diff = (new Date(loan.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+  // Positive = days remaining (round up so 0.1 days left → 1)
+  // Negative = days overdue (round down so -0.1 days → -1, meaning 1 day overdue)
+  return diff >= 0 ? Math.ceil(diff) : Math.floor(diff);
 }
 
 export function formatDate(iso: string): string {
